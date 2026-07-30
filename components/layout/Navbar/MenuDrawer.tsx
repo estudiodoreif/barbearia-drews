@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useLenis } from "lenis/react";
 
 import {
@@ -27,7 +28,23 @@ import styles from "./MenuDrawer.module.css";
  * **Controlado pela Navbar**, que precisa do mesmo estado: com o menu aberto,
  * a barra tem que ficar visível mesmo que o último gesto tenha sido para
  * baixo, senão o painel abre e o botão de fechar sai da tela junto com ela.
+ *
+ * **O overlay e o painel são renderizados por portal no `<body>`**, e isso não
+ * é preferência de organização — é obrigatório. A navbar virou fixa com
+ * `transform` para o reveal por scroll, e um elemento transformado passa a ser
+ * o **bloco de contenção dos descendentes `position: fixed`**. Renderizados
+ * dentro do `<header>`, o `inset: 0` do overlay e o `top/right/bottom` do
+ * painel resolviam contra a faixa de 89px da barra em vez da viewport: o menu
+ * abria espremido dentro da navbar e parecia sumido. Nenhum `z-index` conserta
+ * isso — o problema é o bloco de contenção, não a ordem de pintura.
  */
+
+/*
+ * `document` não existe no servidor, então o portal só pode montar no cliente.
+ * `useSyncExternalStore` com snapshot de servidor `false` faz essa transição
+ * sem mismatch de hidratação e sem `setState` dentro de efeito.
+ */
+const subscribeNoop = () => () => {};
 export function MenuDrawer({
   open,
   onOpenChange,
@@ -38,6 +55,12 @@ export function MenuDrawer({
   const panel = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const lenis = useLenis();
+
+  const mounted = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
 
   const close = useCallback(() => onOpenChange(false), [onOpenChange]);
 
@@ -129,80 +152,87 @@ export function MenuDrawer({
         <span className={styles.bar} aria-hidden="true" />
       </button>
 
-      <div
-        className={styles.overlay}
-        data-open={open}
-        onClick={close}
-        aria-hidden="true"
-      />
-
-      <div
-        ref={panel}
-        id="menu-drawer"
-        className={styles.panel}
-        data-open={open}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu de navegação"
-        // `inert` tira o painel fechado da ordem de tabulação e do leitor de
-        // tela sem depender de `display: none`, que mataria a animação.
-        inert={!open}
-      >
-        <div className={styles.panelHead}>
-          <span className="label label-bracketed">Menu</span>
-          <button
-            type="button"
-            className={styles.closeButton}
-            onClick={() => {
-              close();
-              toggle.current?.focus();
-            }}
-            aria-label="Fechar menu"
-          >
-            Fechar
-          </button>
-        </div>
-
-        <nav className={styles.links} aria-label="Navegação principal">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className={styles.link}
+      {mounted &&
+        createPortal(
+          <>
+            <div
+              className={styles.overlay}
+              data-open={open}
               onClick={close}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
+              aria-hidden="true"
+            />
 
-        <div className={styles.panelFoot}>
-          <a href={TEL_URL} className={styles.phone} onClick={close}>
-            {PHONE_DISPLAY}
-          </a>
+            <div
+              ref={panel}
+              id="menu-drawer"
+              className={styles.panel}
+              data-open={open}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu de navegação"
+              // `inert` tira o painel fechado da ordem de tabulação e do
+              // leitor de tela sem depender de `display: none`, que mataria a
+              // animação.
+              inert={!open}
+            >
+              <div className={styles.panelHead}>
+                <span className="label label-bracketed">Menu</span>
+                <button
+                  type="button"
+                  className={styles.closeButton}
+                  onClick={() => {
+                    close();
+                    toggle.current?.focus();
+                  }}
+                  aria-label="Fechar menu"
+                >
+                  Fechar
+                </button>
+              </div>
 
-          <div className={styles.actions}>
-            <a
-              href={BOOKING_URL}
-              className={styles.booking}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={close}
-            >
-              Agendar <span aria-hidden="true">→</span>
-            </a>
-            <a
-              href={WHATSAPP_URL}
-              className={styles.whats}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={close}
-            >
-              WhatsApp
-            </a>
-          </div>
-        </div>
-      </div>
+              <nav className={styles.links} aria-label="Navegação principal">
+                {NAV_ITEMS.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className={styles.link}
+                    onClick={close}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+
+              <div className={styles.panelFoot}>
+                <a href={TEL_URL} className={styles.phone} onClick={close}>
+                  {PHONE_DISPLAY}
+                </a>
+
+                <div className={styles.actions}>
+                  <a
+                    href={BOOKING_URL}
+                    className={styles.booking}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={close}
+                  >
+                    Agendar <span aria-hidden="true">→</span>
+                  </a>
+                  <a
+                    href={WHATSAPP_URL}
+                    className={styles.whats}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={close}
+                  >
+                    WhatsApp
+                  </a>
+                </div>
+              </div>
+            </div>
+          </>,
+          document.body,
+        )}
     </>
   );
 }

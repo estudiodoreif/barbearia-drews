@@ -8,17 +8,52 @@
  * indireto e quebraria ao mudar `--grid-columns`.
  */
 
+/*
+ * Mobile: **uma linha só, uma peça por vez.**
+ *
+ * Era uma grade 2×2, que num celular dava quatro cards pequenos demais para as
+ * peças se lerem. Como carrossel de scroll nativo com snap, cada produto ocupa
+ * quase a tela inteira e quem quiser ver os outros arrasta para o lado — sem
+ * prender a rolagem vertical, diferente da Galeria.
+ *
+ * Os 82vw deixam uma fresta do card seguinte à mostra: é essa borda cortada que
+ * avisa que há mais coisa para o lado. Com 100vw o carrossel pareceria um card
+ * único e ninguém arrastaria.
+ */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
   gap: var(--space-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Compensa o padding do `.container` para o primeiro card nascer alinhado à
+   * margem e o último poder encostar na borda oposta. */
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+
+.grid::-webkit-scrollbar {
+  display: none;
+}
+
+.grid > * {
+  flex: 0 0 82vw;
+  scroll-snap-align: center;
 }
 
 @media (min-width: 1024px) {
+  /* Desktop volta a ser grade: uma linha, quatro peças, sem scroll. */
   .grid {
-    /* Uma linha só, quatro peças. Sem segunda fileira. */
+    display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-6);
+    overflow-x: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .grid > * {
+    flex: initial;
   }
 }
 
