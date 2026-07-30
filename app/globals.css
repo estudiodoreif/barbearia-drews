@@ -1,0 +1,10 @@
+/*
+ * globals.css — único ponto de entrada de CSS global.
+ * A ordem importa: tokens primeiro (todo o resto os consome).
+ * Estilo de componente vive em *.module.css, não aqui.
+ */
+
+@import "./styles/tokens.css";
+@import "./styles/reset.css";
+@import "./styles/typography.css";
+@import "./styles/layout.css";

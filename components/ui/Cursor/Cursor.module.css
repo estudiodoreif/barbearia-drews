@@ -1,0 +1,116 @@
+/*
+ * Cursor personalizado. Ponto colado no mouse + anel atrasado.
+ *
+ * A regra que esconde o cursor nativo (`.hideNative`) é aplicada por JS, não
+ * declarada globalmente: se o componente não montar, o cursor do sistema
+ * continua — página sem cursor nenhum é página inutilizável.
+ */
+
+.hideNative,
+.hideNative * {
+  cursor: none !important;
+}
+
+/*
+ * Campo de texto é exceção: ali o I-beam nativo é informação (mostra onde o
+ * texto vai entrar), não decoração. O mesmo vale para `[contenteditable]`.
+ */
+.hideNative input,
+.hideNative textarea,
+.hideNative select,
+.hideNative [contenteditable] {
+  cursor: auto !important;
+}
+
+.cursor {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-preloader) + 10);
+  pointer-events: none;
+}
+
+.dot,
+.ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  /* O GSAP escreve `x`/`y` em transform; estes -50% centram o desenho no
+   * ponto exato do cursor sem que o JS precise saber o tamanho de cada peça. */
+  translate: -50% -50%;
+  will-change: transform;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: #fff;
+  /* `scale` (propriedade própria) e não `transform: scale()`: o GSAP escreve
+   * `transform` para posicionar, e disputar a mesma propriedade faria um
+   * apagar o outro a cada frame. */
+  scale: 1;
+  transition: scale var(--dur-fast) var(--ease-out);
+  /*
+   * `difference` resolve claro e escuro com uma regra só: sobre preto o ponto
+   * sai branco, sobre branco sai preto. É o que mantém o cursor visível
+   * cruzando as seções e, principalmente, por cima das fotos — onde uma cor
+   * fixa sempre falharia em alguma região.
+   */
+  mix-blend-mode: difference;
+}
+
+.ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #fff;
+  mix-blend-mode: difference;
+  /*
+   * Só tamanho. `opacity` fica fora de propósito: quem a controla é o GSAP
+   * (entrada e saída do cursor na janela), e uma transição CSS na mesma
+   * propriedade disputa cada frame com os valores inline — o anel ficava
+   * preso em 0.
+   */
+  transition:
+    width var(--dur-fast) var(--ease-out),
+    height var(--dur-fast) var(--ease-out);
+}
+
+/* Sobre link/botão: o anel cresce e o ponto encolhe até sumir */
+.cursor[data-state="link"] .ring {
+  width: 56px;
+  height: 56px;
+}
+
+/* Com rótulo, o anel abre espaço para o texto */
+.cursor[data-state="label"] .ring {
+  width: 84px;
+  height: 84px;
+}
+
+.cursor[data-state="link"] .dot,
+.cursor[data-state="label"] .dot {
+  scale: 0;
+}
+
+.ring[data-pressed="true"] {
+  scale: 0.85;
+}
+
+.label {
+  font-family: var(--font-family-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
+}
+
+.cursor[data-state="label"] .label {
+  opacity: 1;
+}

@@ -1,0 +1,162 @@
+/*
+ * Serviços. Referência: Referências/referencia_04.jpg — statement no topo,
+ * linha divisória, e uma faixa de três colunas: label à esquerda, lista ao
+ * centro (um item em destaque, os outros apagados), thumbnail à direita.
+ */
+
+/*
+ * Coluna de introdução, à esquerda da tabela. Substitui o statement gigante que
+ * ficava sozinho acima da faixa — ver o comentário em Services.tsx.
+ */
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.introText {
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--ctx-muted);
+}
+
+.introCta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-body);
+  border-bottom: var(--border-hairline) solid var(--ctx-text);
+  padding-bottom: 2px;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.introCta:hover {
+  opacity: 0.6;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  padding-top: var(--space-8);
+  border-top: var(--border-hairline) solid var(--ctx-border);
+}
+
+@media (min-width: 768px) {
+  .row {
+    /* introdução | lista flexível | thumbnail fixo — as três colunas da
+     * referência, não o grid de 12 do site (que aqui daria colunas iguais).
+     * A primeira subiu de 8rem para 14rem: agora carrega texto de apoio, não
+     * só o rótulo `[ Tabela ]`. */
+    grid-template-columns: 14rem 1fr 20rem;
+    gap: var(--space-12);
+    align-items: start;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-6);
+  width: 100%;
+  padding-block: var(--space-5);
+  /* Filete entre os itens — o ritmo horizontal que o resto do site usa */
+  border-bottom: var(--border-hairline) solid var(--ctx-border);
+  text-align: left;
+  color: var(--ctx-text);
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.list > li:first-child .item {
+  border-top: var(--border-hairline) solid var(--ctx-border);
+}
+
+/* Índice + nome, agrupados à esquerda */
+.itemName {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+/*
+ * O item ativo fica em contraste cheio e os outros recuam. Feito com
+ * `[data-active]` em vez de `:hover` puro porque o mesmo estado precisa valer
+ * no toque (onde não existe hover) e no foco por teclado.
+ */
+.item[data-active="false"] {
+  opacity: 0.35;
+}
+
+.item[data-active="true"] {
+  transform: translateX(var(--space-2));
+}
+
+.name {
+  /* Caixa alta condensada, grande — a lista é o elemento tipográfico da seção,
+   * não uma tabela de preços. */
+  font-family: var(--font-family-display);
+  font-size: clamp(2rem, 1rem + 3.6vw, 4.5rem);
+  font-weight: var(--weight-medium);
+  line-height: 0.98;
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+
+.meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.duration {
+  color: var(--ctx-muted);
+  font-size: var(--text-small);
+}
+
+.price {
+  font-size: var(--text-body);
+}
+
+/*
+ * Thumbnail: as imagens ficam empilhadas em absoluto e o GSAP cruza a opacidade.
+ * Empilhar (em vez de trocar o `src`) é o que permite o crossfade — trocar o
+ * src daria um flash de imagem vazia enquanto a nova carrega.
+ */
+.thumb {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background-color: var(--ctx-surface);
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  /* No mobile não há hover: a thumbnail viraria um bloco decorativo grande
+   * sem função, então sai. */
+  .thumb {
+    display: none;
+  }
+}
+
+.thumbImage {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.thumbImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

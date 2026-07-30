@@ -1,0 +1,109 @@
+/*
+ * Preloader em formato padrão de carregamento:
+ * porcentagem no canto inferior direito, tira de imagens no inferior esquerdo,
+ * filete de progresso atravessando o topo.
+ *
+ * A versão anterior encaixava a palavra "DREWS" no logo do header via GSAP
+ * Flip — saiu por completo.
+ */
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  /* A cortina sobe na saída; o overflow evita que o conteúdo dela apareça
+   * fora do quadro durante o movimento. */
+  overflow: hidden;
+  will-change: transform;
+}
+
+.preloader[data-state="done"] {
+  display: none;
+}
+
+/* Filete de progresso no topo, largura total */
+.track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-border);
+}
+
+.bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-text);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* Rodapé do preloader: tira de imagens à esquerda, contador à direita */
+.footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--gutter);
+}
+
+/*
+ * Tira de imagens. As imagens ficam empilhadas em absoluto e o GSAP alterna
+ * qual está visível — como todas já estão no DOM, a troca não espera rede e
+ * não pisca.
+ */
+.strip {
+  position: relative;
+  width: 108px;
+  aspect-ratio: 3 / 4;
+  flex-shrink: 0;
+  background-color: var(--color-surface);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .strip {
+    width: 168px;
+  }
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Bloco do contador */
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  text-align: right;
+}
+
+.value {
+  font-family: var(--font-family-display);
+  font-size: clamp(4rem, 14vw, 11rem);
+  font-weight: var(--weight-bold);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  /* Tabular para o número não dançar de largura ao passar de 9 para 10 e de
+   * 99 para 100 — o pulo é muito visível num tamanho desse. */
+  font-variant-numeric: tabular-nums;
+}

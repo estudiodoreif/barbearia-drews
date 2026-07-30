@@ -1,0 +1,119 @@
+/*
+ * layout.css — grid e estrutura de seção, DESIGN.md §6.
+ * 12 colunas, margens de 64px no desktop / 20px no mobile (via --gutter).
+ *
+ * O que dá o caráter editorial aqui são duas coisas, e ambas vêm das
+ * referências do grupo A (Katie Hunter, Aspect, Rue Studio):
+ *   1. filete de 1px atravessando a página entre cada faixa;
+ *   2. assimetria — rótulo fixo na margem, conteúdo deslocado para dentro.
+ */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Grid editorial de 12 colunas. Filhos posicionam com grid-column. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+/* No mobile o grid de 12 colapsa para 1 coluna — cada filho ocupa tudo,
+ * exceto quem sobrescrever explicitamente. */
+@media (max-width: 767px) {
+  .grid > * {
+    grid-column: 1 / -1;
+  }
+}
+
+/*
+ * Réguas verticais entre as colunas. `background-image` em vez de `border` nos
+ * filhos: as linhas ficam independentes de quantos filhos existem e de onde
+ * cada um começa, então a régua continua desenhada mesmo numa coluna vazia.
+ */
+@media (min-width: 768px) {
+  .grid--ruled {
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--ctx-border) 0,
+      var(--ctx-border) 1px,
+      transparent 1px,
+      transparent calc((100% + var(--space-6)) / var(--grid-columns))
+    );
+    background-position: left top;
+  }
+}
+
+/* Seção full-bleed. O contexto de cor vem de data-theme no elemento. */
+.section {
+  position: relative;
+  padding-block: var(--section-padding);
+  background-color: var(--ctx-bg);
+  color: var(--ctx-text);
+}
+
+/* Faixa com filete acima e abaixo, atravessando a página inteira */
+.band {
+  border-top: var(--border-hairline) solid var(--ctx-border);
+}
+
+.band + .band,
+.section + .section {
+  border-top: var(--border-hairline) solid var(--ctx-border);
+}
+
+/*
+ * Cabeçalho de seção: rótulo `[ SOBRE ]` e título empilhados na coluna 1, sob
+ * um filete que atravessa a página.
+ *
+ * A versão anterior prendia o rótulo na coluna 1 e jogava o título para a
+ * coluna 5, buscando a assimetria das referências. Na prática abria um vão de
+ * ~30% da largura entre os dois, e o título — que é o maior tipo da seção —
+ * lia como texto solto boiando no meio da tela, sem nada que o prendesse.
+ *
+ * O filete faz o trabalho que a assimetria tentava fazer: dá início de seção
+ * sem descolar o título do rótulo que o nomeia. A tensão editorial passa a vir
+ * da régua atravessando a largura toda, não do vão.
+ */
+.section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: var(--border-hairline) solid var(--ctx-border);
+  margin-bottom: var(--space-16);
+}
+
+/*
+ * Display encostando nas margens. `.container` já dá o gutter; isto remove a
+ * folga tipográfica lateral (o side-bearing da fonte) para o bloco de texto
+ * alinhar opticamente com o filete acima dele, em vez de parecer recuado.
+ */
+.bleed {
+  margin-left: -0.06em;
+}
+
+/* Régua horizontal fina, para dividir dentro de uma seção */
+.rule {
+  width: 100%;
+  height: var(--border-hairline);
+  background-color: var(--ctx-border);
+  border: none;
+}
+
+/*
+ * Toda imagem de conteúdo do site passa por aqui.
+ *
+ * A curadoria atual já chega em P&B, então na prática o filtro é no-op hoje.
+ * Ele fica como rede de segurança: no dia em que entrar uma foto colorida
+ * (produto novo, registro do celular), a página não quebra a regra estrita de
+ * DESIGN.md §3 por esquecimento. Custa nada e evita uma revisão manual.
+ */
+.photo {
+  filter: grayscale(1) contrast(1.05);
+}

@@ -1,0 +1,54 @@
+/*
+ * Texto correndo em loop. É o recurso que dá movimento contínuo à página —
+ * sem ele o site só se move quando o usuário rola.
+ */
+
+.marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  /* Impede que o texto correndo crie scroll horizontal na página. */
+  max-width: 100vw;
+  padding-block: var(--space-4);
+  border-top: var(--border-hairline) solid var(--ctx-border);
+  border-bottom: var(--border-hairline) solid var(--ctx-border);
+  user-select: none;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding-right: var(--space-8);
+  white-space: nowrap;
+  font-family: var(--font-family-display);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ctx-text);
+}
+
+/* Separador entre repetições — losango reto, sem curva (DESIGN.md §5) */
+.item::after {
+  content: "";
+  width: 0.34em;
+  height: 0.34em;
+  flex-shrink: 0;
+  background-color: var(--ctx-muted);
+  transform: rotate(45deg);
+}
+
+.size-md .item {
+  font-size: clamp(1.25rem, 0.9rem + 1.6vw, 2.25rem);
+}
+
+.size-lg .item {
+  font-size: clamp(2rem, 1.2rem + 4vw, 5rem);
+}

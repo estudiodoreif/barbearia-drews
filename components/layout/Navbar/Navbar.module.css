@@ -1,0 +1,115 @@
+/*
+ * Navbar. Referência: a linha superior miúda do `referencia_01` (Katie Hunter)
+ * e do `referencia_13` (ASAP) — não uma barra com fundo e botão.
+ *
+ * Não é fixa: fica no topo do documento e sai com o scroll.
+ */
+
+.navbar {
+  position: relative;
+  z-index: var(--z-header);
+  width: 100%;
+  border-bottom: var(--border-hairline) solid var(--color-border);
+}
+
+/*
+ * Mobile: `logo | hambúrguer`, numa linha só de altura fixa.
+ *
+ * Antes era uma coluna com o logo em cima e os seis links quebrando embaixo.
+ * Os links agora vivem no MenuDrawer.
+ */
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--navbar-height);
+}
+
+/*
+ * Desktop: três colunas, sendo a do meio `auto` — assim o logo fica no centro
+ * ótico real, e não no centro do espaço que sobra. Com `1fr auto 1fr` as duas
+ * listas laterais ocupam exatamente a mesma largura, mesmo com quantidades
+ * diferentes de texto.
+ */
+@media (min-width: 768px) {
+  .inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-8);
+  }
+}
+
+/* Os links laterais só existem no desktop — no mobile estão no drawer */
+.group {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .groupLeft {
+    justify-content: flex-start;
+  }
+
+  .groupRight {
+    justify-content: flex-end;
+  }
+}
+
+.link {
+  position: relative;
+  font-family: var(--font-family-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text);
+  padding-block: var(--space-1);
+}
+
+/* Sublinhado que cresce da esquerda — hierarquia sem cor (DESIGN.md §3) */
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: var(--border-hairline);
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.link:hover::after {
+  transform: scaleX(1);
+}
+
+.logo {
+  display: block;
+  flex-shrink: 0;
+}
+
+/*
+ * O wordmark é largo e tem florões embaixo (838×489). Dimensionar por largura:
+ * fixar a altura deixaria a marca pequena demais para ser legível.
+ *
+ * Reduzido de 104/124px: no tamanho anterior o logo competia com a headline do
+ * hero logo abaixo, em vez de assinar o topo discretamente.
+ */
+.logo img {
+  width: 68px;
+  height: auto;
+}
+
+@media (min-width: 768px) {
+  .logo img {
+    width: 84px;
+  }
+}

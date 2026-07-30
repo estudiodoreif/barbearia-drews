@@ -1,0 +1,36 @@
+/*
+ * Máscara por linha. Cada linha é um bloco com `overflow: hidden` e o texto
+ * dentro sobe de baixo — a linha aparece "de dentro" do filete em vez de
+ * simplesmente ganhar opacidade.
+ */
+
+.reveal {
+  /* O elemento em si não anima; quem anima são os `.line` dentro. */
+  display: block;
+}
+
+/*
+ * A máscara precisa de folga em CIMA e EMBAIXO.
+ *
+ * O display do site roda com `line-height: 0.84`, ou seja a caixa de linha é
+ * menor que a área que a fonte realmente pinta. Com `overflow: hidden` colado
+ * nela, a máscara decepa o topo das maiúsculas (e os acentos de Í/É, que sobem
+ * acima da altura de caixa alta) e a base das descendentes.
+ *
+ * O padding aumenta a região visível — `overflow: hidden` recorta na borda da
+ * caixa de padding, não na de conteúdo — e a margem negativa devolve o espaço
+ * ao layout, para as linhas seguirem justas como o token pede.
+ */
+.line {
+  display: block;
+  overflow: hidden;
+  padding-top: 0.18em;
+  margin-top: -0.18em;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+
+.lineInner {
+  display: block;
+  will-change: transform;
+}

@@ -1,0 +1,152 @@
+/*
+ * Loja. Uma linha de quatro peças; o mockup do produto é o fundo do card e a
+ * informação vive por cima dele.
+ *
+ * Grid próprio em vez do `.grid` de 12 colunas do site: aqui a grade regular
+ * *é* o elemento visual, e quatro colunas iguais é o desenho pedido. Amarrar
+ * isso a `span 3` do grid de 12 daria o mesmo resultado por um caminho mais
+ * indireto e quebraria ao mudar `--grid-columns`.
+ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    /* Uma linha só, quatro peças. Sem segunda fileira. */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  /* Proporção do mockup (896×1200), então a foto preenche sem recorte
+   * significativo. */
+  aspect-ratio: 3 / 4;
+  border: var(--border-hairline) solid var(--ctx-border);
+  background-color: var(--ctx-bg);
+  /* Contém o scale do hover. Nada de sombra: contraria a estética plana
+   * (DESIGN.md §5). */
+  overflow: hidden;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.card:hover .image {
+  transform: scale(1.04);
+}
+
+/* ---- Informação sobre a imagem ---- */
+
+.info {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4);
+}
+
+/*
+ * Scrim na base. Os mockups são peça preta sobre fundo branco, então o texto
+ * escuro já se lê — isto é o seguro para quando uma peça escura descer perto
+ * do rodapé do card. Fica atrás da informação, à frente da foto.
+ */
+.info::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  /*
+   * Baixo e suave de propósito. Numa primeira versão o scrim tinha 42% de
+   * altura e chegava opaco na base — apagava a barra do moletom e da jaqueta,
+   * que é justamente onde essas peças terminam. Como o fundo dos mockups já é
+   * branco atrás da peça, basta um véu curto para segurar o texto.
+   */
+  height: 26%;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--ctx-bg) 78%, transparent) 0%,
+    color-mix(in srgb, var(--ctx-bg) 30%, transparent) 55%,
+    transparent 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+.category {
+  font-family: var(--font-family-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ctx-muted);
+}
+
+/* Nome e preço na base, na mesma linha */
+.foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.name {
+  font-family: var(--font-family-display);
+  font-size: var(--text-body-lg);
+  font-weight: var(--weight-medium);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-heading);
+  text-transform: uppercase;
+}
+
+.price {
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Pé da seção ---- */
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-12);
+  padding-top: var(--space-5);
+  border-top: var(--border-hairline) solid var(--ctx-border);
+}
+
+@media (min-width: 768px) {
+  .footer {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-body);
+  border-bottom: var(--border-hairline) solid var(--ctx-text);
+  padding-bottom: 2px;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.cta:hover {
+  opacity: 0.6;
+}

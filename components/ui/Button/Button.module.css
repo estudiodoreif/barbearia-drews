@@ -1,0 +1,53 @@
+/*
+ * Botão. DESIGN.md §5: cantos vivos, sem exceção.
+ * Estados resolvidos em escala de cinza — hover clareia, nunca colore.
+ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-8);
+  font-family: var(--font-family-body);
+  font-size: var(--text-label);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: var(--border-hairline) solid transparent;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+/* Primário: sólido no tom do texto do contexto, invertido no rótulo.
+ * Funciona igual em seção clara e escura sem variante extra. */
+.primary {
+  background-color: var(--ctx-text);
+  color: var(--ctx-bg);
+}
+
+.primary:hover {
+  /* Recuo de opacidade em vez de um cinza fixo: mantém o contraste
+   * proporcional ao contexto, claro ou escuro. */
+  background-color: color-mix(in srgb, var(--ctx-text) 82%, var(--ctx-bg));
+}
+
+/* Secundário: só contorno. */
+.secondary {
+  background-color: transparent;
+  color: var(--ctx-text);
+  border-color: var(--ctx-border);
+}
+
+.secondary:hover {
+  border-color: var(--ctx-text);
+  background-color: color-mix(in srgb, var(--ctx-text) 8%, transparent);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

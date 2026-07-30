@@ -1,0 +1,109 @@
+/*
+ * typography.css — classes utilitárias de tipo, DESIGN.md §4.
+ *
+ * Duas famílias no site inteiro: Barlow Condensed (display) e Inter (corpo).
+ * O logo blackletter é imagem, nunca fonte — e aparece em exatamente dois
+ * lugares: navbar e assinatura do rodapé.
+ *
+ * Os labels/eyebrows usam a fonte de CORPO com tracking largo em caixa alta.
+ * DESIGN.md §4 sugere mono como alternativa, mas também limita o site a duas
+ * famílias, e uma mono seria a terceira.
+ */
+
+.display-xl,
+.display-lg,
+.display-md {
+  font-family: var(--font-family-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+
+.display-xl {
+  font-size: var(--text-display-xl);
+}
+
+.display-lg {
+  font-size: var(--text-display-lg);
+}
+
+.display-md {
+  font-size: var(--text-display-md);
+  font-weight: var(--weight-medium);
+}
+
+.heading {
+  font-family: var(--font-family-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  text-transform: uppercase;
+}
+
+.body-lg {
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-body);
+}
+
+.body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+.small {
+  font-size: var(--text-small);
+  line-height: 1.5;
+}
+
+/*
+ * Eyebrow/label editorial no formato `[ SERVIÇOS ]` — o padrão que atravessa
+ * quase todas as referências do grupo A (DESIGN.md §2 e §4).
+ *
+ * Os colchetes entram por `::before`/`::after` em vez de ficarem no texto:
+ * assim um leitor de tela anuncia "Serviços" e não "abre colchete Serviços
+ * fecha colchete", e nenhum componente precisa lembrar de escrevê-los.
+ */
+.label {
+  font-family: var(--font-family-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ctx-muted);
+}
+
+.label-bracketed::before {
+  content: "[";
+  margin-right: 0.6em;
+}
+
+.label-bracketed::after {
+  content: "]";
+  margin-left: 0.45em;
+}
+
+.muted {
+  color: var(--ctx-muted);
+}
+
+/* Numeral de índice — miúdo, tabular, sempre colado num item de lista */
+.index {
+  font-family: var(--font-family-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ctx-muted);
+}
+
+/* Largura de leitura confortável para blocos de texto corrido */
+.measure {
+  max-width: 58ch;
+}
+
+.measure-narrow {
+  max-width: 42ch;
+}

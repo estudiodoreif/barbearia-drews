@@ -1,0 +1,194 @@
+/*
+ * Localização. Era a seção mais fraca do site: quatro linhas rótulo/valor onde
+ * três diziam "a confirmar", e uma caixa tracejada vazia de 420px no lugar do
+ * mapa.
+ *
+ * Agora são duas colunas — dados à esquerda, tabela de horário à direita — e o
+ * mapa real ocupando a largura toda embaixo.
+ */
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-12);
+  padding-top: var(--space-8);
+  border-top: var(--border-hairline) solid var(--ctx-border);
+}
+
+@media (min-width: 768px) {
+  .layout {
+    /* Dados ocupam menos que a tabela: são três blocos curtos contra sete
+     * linhas de horário. */
+    grid-template-columns: 1fr 1.15fr;
+    gap: var(--space-16);
+  }
+}
+
+/* ---- Coluna de dados ---- */
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.address {
+  font-family: var(--font-family-display);
+  font-size: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  font-weight: var(--weight-medium);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-heading);
+  text-transform: uppercase;
+  font-style: normal;
+}
+
+.phone {
+  font-family: var(--font-family-display);
+  font-size: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  font-weight: var(--weight-medium);
+  line-height: 1.05;
+  letter-spacing: var(--tracking-heading);
+  font-variant-numeric: tabular-nums;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.phone:hover {
+  opacity: 0.6;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-body);
+  border-bottom: var(--border-hairline) solid var(--ctx-text);
+  padding-bottom: 2px;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.link:hover {
+  opacity: 0.6;
+}
+
+.amenities {
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--ctx-muted);
+}
+
+/* ---- Tabela de horário ---- */
+
+.hours {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.hoursTitle {
+  align-self: flex-start;
+}
+
+.hoursList {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Cada dia é uma linha rótulo/valor com filete — a mesma estrutura da lista de
+ * Serviços, o que é o que dá unidade entre as seções.
+ */
+.day {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-bottom: var(--border-hairline) solid var(--ctx-border);
+}
+
+.day:first-child {
+  border-top: var(--border-hairline) solid var(--ctx-border);
+}
+
+.dayLabel {
+  font-family: var(--font-family-display);
+  font-size: var(--text-body-lg);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-heading);
+  text-transform: uppercase;
+  color: var(--ctx-muted);
+}
+
+.dayValue {
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--ctx-muted);
+  text-align: right;
+}
+
+/*
+ * Hoje em contraste cheio, o resto recuado. É a mesma gramática de destaque da
+ * lista de Serviços (`[data-active]`): hierarquia por contraste, nunca por cor
+ * — o site não tem accent (DESIGN.md §3).
+ */
+.day[data-today="true"] .dayLabel,
+.day[data-today="true"] .dayValue {
+  color: var(--ctx-text);
+}
+
+.day[data-today="true"] .dayLabel::after {
+  content: "hoje";
+  margin-left: var(--space-3);
+  font-family: var(--font-family-body);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--ctx-muted);
+}
+
+.closed {
+  /* Sem tratamento especial além do próprio texto: uma linha "Fechado" mais
+   * apagada que as outras já é a informação. */
+  opacity: 0.7;
+}
+
+/* ---- Mapa ---- */
+
+/*
+ * Altura fixa, não `aspect-ratio` com `max-height`: combinados, o teto de
+ * altura estrangula a largura pela proporção e o mapa deixa de ocupar o
+ * container (ficava ~925px numa faixa de 1312px).
+ */
+.map {
+  position: relative;
+  margin-top: var(--space-16);
+  height: clamp(300px, 40vw, 520px);
+  background-color: var(--ctx-surface);
+  border: var(--border-hairline) solid var(--ctx-border);
+}
+
+.map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /*
+   * Mesmo tratamento das fotos (`.photo`): o mapa do Google chega colorido e
+   * quebraria a regra estrita P&B (DESIGN.md §3) no meio de uma seção clara.
+   * O contraste leve compensa o cinza lavado que o grayscale deixa.
+   */
+  filter: grayscale(1) contrast(1.05);
+}
+
+@media (max-width: 767px) {
+  .map {
+    height: 320px;
+    margin-top: var(--space-12);
+  }
+}

@@ -1,0 +1,18 @@
+/*
+ * Label/eyebrow de seção no formato `01 [ SOBRE ]` — o padrão que atravessa as
+ * referências do grupo A (DESIGN.md §2, §4 e §6).
+ *
+ * Os colchetes vêm de `.label-bracketed` em typography.css, por pseudo-elemento,
+ * para não entrarem no texto lido por leitor de tela.
+ */
+
+.label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+/* Numeração editorial: mais apagada que o nome da seção */
+.index {
+  opacity: 0.6;
+}

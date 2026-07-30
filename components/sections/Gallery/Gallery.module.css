@@ -1,0 +1,148 @@
+/*
+ * Galeria. Referência: referencia_06 (trilha horizontal com uma imagem em
+ * destaque) + a legenda "role para navegar" do referencia_13.
+ *
+ * A palavra gigante de fundo do referencia_13 (`.backdrop`) saiu na revisão de
+ * UI — ver o comentário em Gallery.tsx.
+ */
+
+.gallery {
+  position: relative;
+  overflow: hidden;
+}
+
+/*
+ * Quando a seção é pinada, todo o conteúdo tem que caber numa tela — senão o
+ * título fica coberto pela trilha, que é irmã dele e pinta depois. Por isso a
+ * altura é travada e a trilha é dimensionada pela ALTURA (ver `.frame`), não
+ * pela largura.
+ */
+@media (min-width: 768px) {
+  .gallery {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: var(--space-16);
+  }
+}
+
+.inner {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* Cabeçalho mais compacto aqui: a seção é pinada e cada pixel vertical do
+ * cabeçalho sai da altura disponível para as fotos. */
+.head {
+  margin-bottom: var(--space-8);
+}
+
+/*
+ * Trilha. No desktop o GSAP a desloca no eixo X conforme o scroll (seção
+ * pinada). No mobile volta a ser scroll nativo com snap — pinar e amarrar o
+ * scroll ao GSAP em aparelho fraco custa caro e engasga o gesto.
+ */
+.track {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding-inline: var(--gutter);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Barra de rolagem escondida: a affordance é a legenda "role para navegar" */
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .track {
+    /* No desktop quem move é o GSAP; o overflow nativo tem que sair do caminho
+     * senão os dois disputam o mesmo eixo. */
+    overflow-x: visible;
+    scroll-snap-type: none;
+    width: max-content;
+  }
+}
+
+.item {
+  flex: 0 0 auto;
+  width: 68vw;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-color: var(--ctx-surface);
+  overflow: hidden;
+}
+
+/*
+ * No desktop a trilha é dimensionada pela ALTURA: com `height` em svh mais
+ * `aspect-ratio`, a largura é derivada. Assim as fotos nunca estouram a altura
+ * da seção pinada — o que aconteceria se a largura mandasse (26vw numa tela
+ * larga e baixa daria uma foto mais alta que a tela).
+ */
+@media (min-width: 768px) {
+  .item {
+    width: auto;
+  }
+
+  .frame {
+    width: auto;
+    height: 52svh;
+  }
+
+  /*
+   * Uma imagem maior quebra o ritmo regular e cria o ponto de foco da
+   * referencia_06. Fica no 2º item: é o `barba`, a melhor imagem autêntica que
+   * existe. O 3º (`apresentacao`) é vídeo-selfie de celular e não sustenta o
+   * destaque.
+   */
+  .item:nth-child(2) .frame {
+    height: 64svh;
+    aspect-ratio: 4 / 5;
+  }
+}
+
+.frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.item:hover .frame img {
+  transform: scale(1.04);
+}
+
+/* Legenda numerada sob cada foto, com filete acima — o padrão de caption das
+ * referências do grupo A (Katie Hunter usa `[ THE COOL EFFECT ]`). */
+/*
+ * Índice e texto juntos à esquerda, não nas duas pontas: com as fotos largas,
+ * o índice de um item ficava colado no texto do item anterior e a leitura
+ * embaralhava ("03 … A CASA 04 … BARBA").
+ */
+.caption {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: var(--border-hairline) solid var(--ctx-border);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  padding-inline: var(--gutter);
+}

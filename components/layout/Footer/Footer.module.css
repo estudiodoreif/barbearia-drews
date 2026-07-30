@@ -1,0 +1,185 @@
+/*
+ * Rodapé. Referência: o bloco de contato tipográfico do referencia_01.
+ *
+ * Absorveu a seção Contato: o CTA final vive aqui, não numa seção própria logo
+ * acima — eram duas chamadas iguais em sequência.
+ *
+ * Passou por uma poda na revisão de UI: saíram o wordmark gigante cortado na
+ * base (`.signature`, que vinha do referencia_03), o marquee e as quatro
+ * colunas com réguas verticais. O rodapé é a última coisa que a página diz;
+ * dizer menos, aqui, é dizer melhor.
+ */
+
+.footer {
+  position: relative;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border-top: var(--border-hairline) solid var(--color-border);
+  overflow: hidden;
+}
+
+/* ---- CTA editorial ---- */
+
+.cta {
+  padding-top: var(--space-24);
+  padding-bottom: var(--space-12);
+}
+
+/*
+ * A chamada é o maior tipo do rodapé. Como link, ela é o alvo de clique — não
+ * um título com um botão pequeno embaixo.
+ *
+ * Baixou de `--text-display-xl` para `--text-display-lg`: com o wordmark
+ * gigante fora, o `xl` deixou de equilibrar nada e só empurrava o resto do
+ * rodapé para fora da dobra.
+ */
+.ctaLink {
+  display: block;
+  width: 100%;
+  font-family: var(--font-family-display);
+  font-size: var(--text-display-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.ctaLink:hover {
+  opacity: 0.55;
+}
+
+/* Seta que avança no hover — o único movimento do bloco, para não competir
+ * com o tamanho do tipo. */
+.arrow {
+  display: inline-block;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.ctaLink:hover .arrow {
+  transform: translateX(0.18em);
+}
+
+.ctaMeta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-10);
+  padding-top: var(--space-6);
+  border-top: var(--border-hairline) solid var(--color-border);
+}
+
+@media (min-width: 768px) {
+  .ctaMeta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-12);
+    align-items: end;
+  }
+}
+
+.phone {
+  font-family: var(--font-family-display);
+  font-size: clamp(2rem, 1.2rem + 3.4vw, 4rem);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: var(--tracking-heading);
+  font-variant-numeric: tabular-nums;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.phone:hover {
+  opacity: 0.6;
+}
+
+.phoneBlock,
+.whatsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 768px) {
+  .whatsBlock {
+    align-items: flex-end;
+    text-align: right;
+  }
+}
+
+.whatsLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-body-lg);
+  border-bottom: var(--border-hairline) solid var(--color-text);
+  padding-bottom: 2px;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.whatsLink:hover {
+  opacity: 0.6;
+}
+
+/* ---- Faixa de informação ---- */
+
+/*
+ * Endereço, horário e redes lado a lado. Substitui as quatro colunas com
+ * réguas verticais: num one-page, a coluna "Navegação" só repetia a navbar.
+ */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-block: var(--space-10);
+  border-top: var(--border-hairline) solid var(--color-border);
+  font-size: var(--text-small);
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .info {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-12);
+  }
+}
+
+.address {
+  font-style: normal;
+}
+
+.hours {
+  color: var(--color-muted);
+}
+
+.socials {
+  display: flex;
+  gap: var(--space-5);
+}
+
+.social {
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.social:hover {
+  opacity: 0.6;
+}
+
+/* ---- Fine print ---- */
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block: var(--space-5);
+  border-top: var(--border-hairline) solid var(--color-border);
+  color: var(--color-muted);
+}
+
+@media (min-width: 768px) {
+  .bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

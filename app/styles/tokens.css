@@ -1,0 +1,154 @@
+/*
+ * tokens.css — fonte única de cor, espaço, tipo e motion.
+ * Espelha DESIGN.md §3 (paleta), §4 (tipografia), §6 (grid) e §10 (motion).
+ *
+ * Regra: nenhum valor de cor literal fora deste arquivo. Componentes usam
+ * apenas os tokens de contexto (--ctx-*), nunca a escala crua.
+ */
+
+:root {
+  /* ---------------------------------------------------------------
+   * Paleta — DESIGN.md §3. Escala de cinza estrita, sem accent.
+   * Cinzas neutros: sem matiz quente/frio.
+   * ------------------------------------------------------------- */
+  --color-bg: #0a0a0a;
+  --color-bg-alt: #fafaf8;
+  --color-text: #f5f5f3;
+  --color-text-inverse: #0a0a0a;
+  --color-muted: #8a8a8a;
+  --color-border: #2a2a2a;
+  --color-border-inverse: #dcdcdc;
+  --color-surface: #141414;
+  --color-surface-alt: #efefef;
+
+  /* Adição a DESIGN.md §3: --color-muted (#8A8A8A) sobre --color-bg-alt
+   * dá contraste 3.3:1 e reprova AA para texto corrido. Este é o mesmo
+   * cinza neutro, escurecido só o suficiente para passar (4.9:1). */
+  --color-muted-inverse: #6e6e6e;
+
+  /* ---------------------------------------------------------------
+   * Tokens de contexto — é o que os componentes consomem.
+   * Seções claras trocam o contexto com [data-theme="light"].
+   * ------------------------------------------------------------- */
+  --ctx-bg: var(--color-bg);
+  --ctx-text: var(--color-text);
+  --ctx-muted: var(--color-muted);
+  --ctx-border: var(--color-border);
+  --ctx-surface: var(--color-surface);
+
+  /* ---------------------------------------------------------------
+   * Tipografia — DESIGN.md §4. Duas famílias, no máximo.
+   * As variáveis --font-* vêm de next/font em app/layout.tsx.
+   * ------------------------------------------------------------- */
+  --font-family-display: var(--font-display), "Arial Narrow", sans-serif;
+  --font-family-body: var(--font-body), system-ui, sans-serif;
+
+  /*
+   * Escala fluida: mínimo em 375px, máximo em 1600px.
+   *
+   * Os tamanhos de display são bem maiores que numa grotesca de largura normal
+   * porque a condensada ocupa ~30% menos largura por caractere — no tamanho
+   * antigo ela lia como subtítulo, não como manchete.
+   */
+  --text-display-xl: clamp(4.5rem, 2rem + 13vw, 13rem);
+  --text-display-lg: clamp(3.25rem, 1.5rem + 9vw, 9rem);
+  --text-display-md: clamp(2.25rem, 1.4rem + 4.4vw, 5rem);
+  --text-heading: clamp(1.625rem, 1.2rem + 1.8vw, 2.75rem);
+  --text-body-lg: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-label: 0.6875rem;
+
+  /* Entrelinha justa: condensada em caixa alta não tem descendentes longos,
+   * então linhas quase se tocando é o que dá o bloco tipográfico sólido das
+   * referências do grupo B. */
+  --leading-display: 0.84;
+  --leading-heading: 1;
+  --leading-body: 1.6;
+
+  /* Tracking negativo mais forte no display — a condensada aguenta e é o que
+   * fecha o bloco. Já o label vai no extremo oposto: miúdo e muito espaçado. */
+  --tracking-display: -0.02em;
+  --tracking-heading: -0.01em;
+  --tracking-label: 0.22em;
+
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+
+  /* ---------------------------------------------------------------
+   * Espaço — escala base 8px
+   * ------------------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+  --space-40: 10rem;
+
+  /* Respiro vertical entre seções (editorial, generoso — §6) */
+  --section-padding: clamp(var(--space-16), 10vw, var(--space-40));
+
+  /* ---------------------------------------------------------------
+   * Layout — DESIGN.md §6: 12 colunas, margens 64px desktop / 20px mobile
+   * ------------------------------------------------------------- */
+  --grid-columns: 12;
+  --gutter: 20px;
+  --container-max: 1600px;
+  /* Altura da navbar. Não é mais offset de conteúdo (a navbar deixou de ser
+   * fixa) — serve só para dimensionar a própria barra. */
+  --navbar-height: 72px;
+
+  /* ---------------------------------------------------------------
+   * Forma — DESIGN.md §5: cantos vivos em todo o site
+   * ------------------------------------------------------------- */
+  --radius: 0;
+  --border-hairline: 1px;
+
+  /* ---------------------------------------------------------------
+   * Motion — DESIGN.md §10. Sutil e editorial.
+   * Usados tanto no CSS quanto passados a GSAP/Motion (lib/motion.ts).
+   * ------------------------------------------------------------- */
+  --dur-instant: 120ms;
+  --dur-fast: 240ms;
+  --dur-base: 600ms;
+  --dur-slow: 1000ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --z-canvas: 0;
+  --z-content: 1;
+  --z-header: 100;
+  --z-overlay: 200;
+  --z-preloader: 300;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 40px;
+    --navbar-height: 88px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 64px;
+  }
+}
+
+/* Seções de fundo claro — inverte o contexto, nunca introduz cor */
+[data-theme="light"] {
+  --ctx-bg: var(--color-bg-alt);
+  --ctx-text: var(--color-text-inverse);
+  --ctx-muted: var(--color-muted-inverse);
+  --ctx-border: var(--color-border-inverse);
+  --ctx-surface: var(--color-surface-alt);
+}
