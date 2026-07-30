@@ -85,8 +85,8 @@ export function Gallery() {
             <SectionLabel index={3}>Galeria</SectionLabel>
             <TextReveal
               as="h2"
-              className="display-md bleed"
-              lines={["O trabalho,", "de perto"]}
+              className={`display-md bleed ${styles.title}`}
+              lines={["O trabalho, de perto"]}
             />
           </div>
         </div>

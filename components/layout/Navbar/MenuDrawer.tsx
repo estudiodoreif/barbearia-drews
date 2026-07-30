@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useLenis } from "lenis/react";
 
 import {
@@ -23,14 +23,23 @@ import styles from "./MenuDrawer.module.css";
  * Só existe abaixo de 768px — o CSS esconde o botão no desktop, onde a navbar
  * horizontal continua igual. Por isso não há `useMediaQuery` aqui: quem decide
  * é o CSS, e duplicar o breakpoint em JS criaria duas fontes de verdade.
+ *
+ * **Controlado pela Navbar**, que precisa do mesmo estado: com o menu aberto,
+ * a barra tem que ficar visível mesmo que o último gesto tenha sido para
+ * baixo, senão o painel abre e o botão de fechar sai da tela junto com ela.
  */
-export function MenuDrawer() {
-  const [open, setOpen] = useState(false);
+export function MenuDrawer({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const panel = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const lenis = useLenis();
 
-  const close = useCallback(() => setOpen(false), []);
+  const close = useCallback(() => onOpenChange(false), [onOpenChange]);
 
   /*
    * Trava o scroll pelo Lenis, não por `overflow: hidden` no body.
@@ -112,7 +121,7 @@ export function MenuDrawer() {
         aria-expanded={open}
         aria-controls="menu-drawer"
         aria-label={open ? "Fechar menu" : "Abrir menu"}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => onOpenChange(!open)}
       >
         {/* Duas barras, não três: o traço miúdo do referencia_01, coerente
             com o resto da navbar, que é toda tipografia fina. */}

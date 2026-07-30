@@ -1,6 +1,7 @@
 /*
- * Hero. A headline condensada ocupa a largura toda, encostando nos gutters —
- * é o bloco tipográfico do grupo B das referências, não um título centralizado.
+ * Hero. Referência: `Referências/referencia_09.jpg` — bloco tipográfico
+ * centralizado com chips de foto inline, CTA logo abaixo, e a seção seguinte
+ * espiando por baixo em vez de a tela toda ser hero.
  *
  * O vídeo de fundo saiu daqui: virou a seção VideoReveal, que sobe por cima
  * deste Hero pinado.
@@ -11,9 +12,15 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  /* `svh` e não `vh`: no mobile o vh inclui a barra de endereço e empurra o pé
-   * do hero para fora da tela. Desconta a navbar, que agora rola com a página. */
-  min-height: calc(100svh - var(--navbar-height));
+  /*
+   * 80svh, não a tela cheia: os 20% restantes são o topo do VideoReveal
+   * aparecendo embaixo, que é o movimento da referência.
+   *
+   * `svh` e não `vh` porque no mobile o `vh` inclui a barra de endereço. E
+   * sem descontar `--navbar-height`: a navbar virou fixa e passou a flutuar
+   * por cima, deixando de ocupar altura no fluxo.
+   */
+  min-height: 80svh;
   background-color: var(--color-bg);
   color: var(--color-text);
   overflow: hidden;
@@ -25,24 +32,27 @@
  * é atmosfera, o tipo é o que se lê.
  */
 .top,
-.center,
-.meta {
+.center {
   position: relative;
   z-index: 1;
 }
 
 .top {
-  padding-top: var(--space-8);
+  /* Folga extra no topo: a navbar agora é fixa e sobrepõe o início da seção. */
+  padding-top: calc(var(--navbar-height) + var(--space-8));
+  text-align: center;
 }
 
-/* Bloco tipográfico central */
+/* Bloco tipográfico central, agora centrado — antes era alinhado à esquerda */
 .center {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--space-8);
+  align-items: center;
+  gap: var(--space-10);
   padding-block: var(--space-12);
+  text-align: center;
 }
 
 /*
@@ -60,7 +70,9 @@
  * A conta do teto: em Barlow Condensed, "no tempo ▮ certo" — a linha mais
  * longa — ocupa ~10.6em contando o chip (1.5em) e suas margens. Com a largura
  * útil de 1472px (container 1600 menos os gutters), o teto é
- * 1472/10.6 ≈ 138px ≈ 8.6rem.
+ * 1472/10.6 ≈ 138px ≈ 8.6rem. O `clamp` para em 9rem (144px) e a linha mede
+ * ~1327px no pior caso — folga confortável, mas é o número a respeitar se a
+ * copy da headline mudar.
  */
 .headline {
   width: 100%;
@@ -69,7 +81,7 @@
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
   text-transform: uppercase;
-  font-size: clamp(2.5rem, 0.75rem + 5.9vw, 8.25rem);
+  font-size: clamp(2.75rem, 0.75rem + 6.4vw, 9rem);
 }
 
 /*
@@ -106,29 +118,10 @@
 }
 
 /*
- * Linha de metadados no pé, agora só com a hora.
- *
- * Tinha três células (legenda / CTA / hora); as duas primeiras saíram a pedido
- * do cliente, junto com o marquee. Sobrou o filete e o relógio alinhado à
- * direita — o que é, no fim, o mais próximo da linha miúda das referências.
+ * CTA. O visual vem de `Button` variante `primary` (branco sólido no contexto
+ * escuro); aqui só o espaçamento e um alvo de clique mais generoso, já que é a
+ * única ação da primeira dobra.
  */
-.meta {
-  border-top: var(--border-hairline) solid var(--color-border);
-  padding-block: var(--space-5);
-  display: flex;
-  justify-content: center;
-}
-
-@media (min-width: 768px) {
-  .meta {
-    justify-content: flex-end;
-  }
-
-  .metaRight {
-    text-align: right;
-  }
-}
-
-.clock {
-  font-variant-numeric: tabular-nums;
+.cta {
+  padding-inline: var(--space-12);
 }

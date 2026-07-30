@@ -30,12 +30,20 @@ export function useHeroVideoScroll() {
         // vídeo full-bleed é caro em aparelho fraco, e o resultado sem pin
         // (scroll normal, vídeo entrando de baixo) continua legível.
         //
-        // Um ScrollTrigger só, com o pin e o scrub juntos — não dois.
-        // Com dois triggers separados apontando para `#inicio`, o segundo mede
-        // um elemento que o primeiro já está pinando (e portanto transformando
-        // e envolvendo num pin-spacer): as duas faixas de scroll divergem e o
-        // vídeo para em ~85% do caminho, sem nunca cobrir o Hero.
-        const tl = gsap.timeline({
+        /*
+         * **Sem tween.** O pin sozinho já produz o efeito.
+         *
+         * Havia aqui um `fromTo("#video-reveal", { yPercent: 100 }, ...)` que
+         * empurrava o vídeo uma tela inteira para baixo e o trazia de volta com
+         * o scroll. Funcionava enquanto o Hero ocupava 100svh — mas com o Hero
+         * a 80svh (referencia_09), o vídeo deveria aparecer logo abaixo dele em
+         * repouso, e o `yPercent: 100` deixava um vazio no lugar.
+         *
+         * Com `pinSpacing: false`, a seção seguinte sobe naturalmente por cima
+         * da seção pinada, que é exatamente a cobertura desejada. O tween era
+         * redundante e brigava com a nova altura.
+         */
+        gsap.timeline({
           scrollTrigger: {
             trigger: "#inicio",
             start: "top top",
@@ -52,12 +60,6 @@ export function useHeroVideoScroll() {
             invalidateOnRefresh: true,
           },
         });
-
-        tl.fromTo(
-          "#video-reveal",
-          { yPercent: 100 },
-          { yPercent: 0, ease: "none" },
-        );
       },
     );
 

@@ -27,11 +27,11 @@ import styles from "./Footer.module.css";
  *    só repetia a navbar.
  *
  * Sobrou o que o rodapé de um negócio local precisa ter: a chamada para
- * agendar, o telefone, onde fica e quando abre.
+ * agendar, o telefone, onde fica e quando abre. A linha de copyright e a
+ * assinatura do estúdio também saíram, a pedido do cliente — o rodapé fecha na
+ * faixa de endereço/horário/redes.
  */
 export function Footer() {
-  const year = new Date().getFullYear();
-
   return (
     <footer id="contato" className={styles.footer}>
       <div className="container">
@@ -103,12 +103,6 @@ export function Footer() {
           </span>
         </div>
 
-        <div className={`label ${styles.bottom}`}>
-          <span>
-            © {year} {SITE.legalName}
-          </span>
-          <span>Estúdio do Reif</span>
-        </div>
       </div>
     </footer>
   );

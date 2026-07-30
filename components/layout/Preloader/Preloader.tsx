@@ -223,8 +223,18 @@ export function Preloader() {
         </div>
 
         <span className={styles.counter}>
-          <span ref={counter} className={styles.value}>
-            0
+          {/*
+            O `%` mora **fora** do nó que o GSAP atualiza. O `onUpdate` da
+            contagem reescreve o `textContent` do `.value` a cada frame — um
+            sufixo colocado dentro dele seria apagado no primeiro quadro.
+          */}
+          <span className={styles.readout}>
+            <span ref={counter} className={styles.value}>
+              0
+            </span>
+            <span className={styles.percent} aria-hidden="true">
+              %
+            </span>
           </span>
         </span>
       </div>

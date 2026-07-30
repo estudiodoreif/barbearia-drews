@@ -97,6 +97,13 @@
   text-align: right;
 }
 
+/* Numeral e símbolo lado a lado, alinhados pelo topo do numeral */
+.readout {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.06em;
+}
+
 .value {
   font-family: var(--font-family-display);
   font-size: clamp(4rem, 14vw, 11rem);
@@ -106,4 +113,17 @@
   /* Tabular para o número não dançar de largura ao passar de 9 para 10 e de
    * 99 para 100 — o pulo é muito visível num tamanho desse. */
   font-variant-numeric: tabular-nums;
+}
+
+/*
+ * O `%` entra bem menor e pendurado no topo, como expoente. No mesmo corpo do
+ * numeral ele roubaria a leitura — o que importa é o número subindo.
+ */
+.percent {
+  font-family: var(--font-family-display);
+  font-size: clamp(1rem, 3vw, 2.25rem);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  padding-top: 0.2em;
+  color: var(--color-muted);
 }

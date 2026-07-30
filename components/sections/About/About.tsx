@@ -7,6 +7,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { TextReveal } from "@/components/ui/TextReveal";
 import { PHOTOS } from "@/content/photos";
+import { REVIEWS } from "@/content/reviews";
 import { STATS } from "@/content/stats";
 import { BARBERS } from "@/content/services";
 import { useParallax } from "@/hooks/useParallax";
@@ -34,7 +35,9 @@ import styles from "./About.module.css";
  */
 export function About() {
   const media = useRef<HTMLDivElement>(null);
-  useParallax(media, 10);
+  // 18 e não 10: a deriva mais longa é o que torna o parallax perceptível numa
+  // foto de largura total. A folga do `.drift` no CSS acompanha esse número.
+  useParallax(media, 18);
 
   return (
     <section id="sobre" className={`section ${styles.about}`} data-theme="light">
@@ -66,7 +69,7 @@ export function About() {
 
       <div className="container">
         <Reveal className={styles.textBlock}>
-          <p className={`body ${styles.text}`}>
+          <p className={styles.text}>
             Na DREWS, cada corte começa antes da tesoura: é entender a
             estrutura, o gesto certo, o tempo de cada cliente. Aprendemos, dia
             após dia, que o caminho do sucesso não pula etapas — ele se constrói
@@ -98,6 +101,30 @@ export function About() {
             </div>
           ))}
         </div>
+
+        {/*
+          Prova social logo abaixo dos números: a nota 4,9 diz o quanto, os
+          depoimentos dizem o porquê. Textos reais do perfil no Google — ver a
+          justificativa da escolha em content/reviews.ts.
+        */}
+        <Reveal className={styles.reviews} stagger={0.08}>
+          {REVIEWS.map((review) => (
+            <figure key={review.author} className={styles.review}>
+              <span className={styles.stars} aria-label="5 de 5 estrelas">
+                <span aria-hidden="true">★★★★★</span>
+              </span>
+
+              <blockquote className={styles.reviewText}>
+                {review.text}
+              </blockquote>
+
+              <figcaption className={styles.reviewMeta}>
+                <span className={styles.reviewAuthor}>{review.author}</span>
+                <span className="label">Google · {review.when}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </Reveal>
       </div>
     </section>
   );

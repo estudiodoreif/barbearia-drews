@@ -3,15 +3,16 @@
 import Image from "next/image";
 import { Fragment, useRef } from "react";
 
+import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { TextReveal } from "@/components/ui/TextReveal";
 import { useIntro } from "@/components/layout/Preloader";
 import { PHOTOS, type Photo } from "@/content/photos";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { EASE_GSAP } from "@/lib/motion";
+import { BOOKING_URL } from "@/lib/site";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
-import { Clock } from "./Clock";
 import { ImageTrail } from "./ImageTrail";
 import styles from "./Hero.module.css";
 
@@ -115,23 +116,20 @@ export function Hero() {
           ]}
         />
 
-      </div>
+        {/*
+          CTA de volta ao hero. A rodada anterior o tinha removido junto com a
+          linha de metadados, e o site ficou sem caminho para agendar acima da
+          dobra — a navbar também não tem botão.
 
-      {/*
-        Linha de metadados reduzida ao relógio.
-        Saíram daqui, a pedido do cliente: o parágrafo de apoio ("Corte e barba
-        em Jaraguá do Sul…"), o link "Marcar horário" e o marquee com a frase da
-        vitrine que corria acima. O Hero passa a ser rótulo + headline + hora.
-
-        Nota de conversão: com o CTA fora daqui e a navbar sem botão, o primeiro
-        caminho para agendar fica em Serviços, duas dobras abaixo.
-      */}
-      <div className="container">
-        <div className={styles.meta} data-hero-fade>
-          <span className={`label ${styles.metaRight} ${styles.clock}`}>
-            <Clock />
-          </span>
-        </div>
+          `Button` variante `primary`: no contexto escuro do hero, ela já
+          resolve para fundo `--ctx-text` (branco) com rótulo `--ctx-bg`
+          (preto), que é exatamente o retângulo branco pedido. Sem CSS novo.
+        */}
+        <span data-hero-fade>
+          <Button href={BOOKING_URL} variant="primary" className={styles.cta}>
+            Agendar agora
+          </Button>
+        </span>
       </div>
     </section>
   );

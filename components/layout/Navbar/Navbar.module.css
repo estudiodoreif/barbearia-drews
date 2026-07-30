@@ -5,11 +5,43 @@
  * Não é fixa: fica no topo do documento e sai com o scroll.
  */
 
+/*
+ * Fixa, com reveal por direção — ver Navbar.tsx.
+ *
+ * O fundo só entra depois que a barra descola do topo: sobre o Hero ela flutua
+ * limpa, e sobre o resto do site precisa de base para os links não brigarem com
+ * a foto que estiver passando por baixo.
+ */
 .navbar {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   z-index: var(--z-header);
   width: 100%;
-  border-bottom: var(--border-hairline) solid var(--color-border);
+  border-bottom: var(--border-hairline) solid transparent;
+  background-color: transparent;
+  transform: translateY(-100%);
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+.navbar[data-visible="true"] {
+  transform: translateY(0);
+}
+
+.navbar[data-at-top="false"] {
+  background-color: var(--color-bg);
+  border-bottom-color: var(--color-border);
+}
+
+/* Quem pediu menos movimento não ganha a barra deslizando: ela troca de estado
+ * na hora, mas continua sumindo e voltando. */
+@media (prefers-reduced-motion: reduce) {
+  .navbar {
+    transition: none;
+  }
 }
 
 /*
