@@ -10,25 +10,11 @@ import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 
 import styles from "./Gallery.module.css";
 
-/**
- * Legendas da trilha, na ordem de `GALLERY_PHOTOS`.
- *
- * Ficam aqui e não em `photos.ts` porque são específicas desta seção — a mesma
- * foto aparece no rastro do Hero sem legenda nenhuma.
+/*
+ * As legendas numeradas sob cada foto saíram: nomeavam o óbvio ("BARBA" sob
+ * uma foto de barba) e o filete de cada uma criava uma linha de base regular
+ * que competia com a variação de formato da trilha.
  */
-const CAPTIONS = [
-  "Espelho",
-  "Enquadramento",
-  "Retrato",
-  "Contorno",
-  "Cadeira",
-  "Barba",
-  "Navalha",
-  "Dreads",
-  "Degradê",
-  "Nuca",
-  "Reflexo",
-];
 
 export function Gallery() {
   const root = useRef<HTMLElement>(null);
@@ -47,10 +33,18 @@ export function Gallery() {
           const el = track.current;
           if (!el) return;
 
-          // A distância é lida por função, não valor fixo: as fotos ainda podem
-          // estar carregando quando o trigger é criado, e `invalidateOnRefresh`
-          // faz o GSAP recalcular quando a largura real muda.
-          const distance = () => el.scrollWidth - window.innerWidth;
+          /*
+           * A distância é lida por função, não valor fixo: as fotos ainda podem
+           * estar carregando quando o trigger é criado, e `invalidateOnRefresh`
+           * faz o GSAP recalcular quando a largura real muda.
+           *
+           * `documentElement.clientWidth` e não `window.innerWidth`: o segundo
+           * inclui a barra de rolagem, então a trilha percorria alguns pixels a
+           * mais do que a área visível e o último item parava meio cortado na
+           * borda direita.
+           */
+          const distance = () =>
+            el.scrollWidth - document.documentElement.clientWidth;
 
           gsap.to(el, {
             x: () => -distance(),
@@ -98,25 +92,16 @@ export function Gallery() {
         </div>
 
         <div ref={track} className={styles.track} data-cursor="Arrastar">
-          {GALLERY_PHOTOS.map((photo, i) => (
+          {GALLERY_PHOTOS.map((photo) => (
             <figure key={photo.src} className={styles.item}>
-              <div className={styles.frame}>
-                <Image
-                  className="photo"
-                  src={photo.src}
-                  alt={photo.alt}
-                  width={photo.width}
-                  height={photo.height}
-                  sizes="(min-width: 768px) 38vw, 68vw"
-                />
-              </div>
-
-              <figcaption className={styles.caption}>
-                <span className="index" aria-hidden="true">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="label">{CAPTIONS[i]}</span>
-              </figcaption>
+              <Image
+                className="photo"
+                src={photo.src}
+                alt={photo.alt}
+                width={photo.width}
+                height={photo.height}
+                sizes="(min-width: 768px) 38vw, 68vw"
+              />
             </figure>
           ))}
         </div>

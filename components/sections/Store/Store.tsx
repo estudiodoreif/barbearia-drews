@@ -30,10 +30,11 @@ export function Store() {
       <div className="container">
         <div className="section-head">
           <SectionLabel index={5}>Loja</SectionLabel>
+          {/* Uma linha só. No mobile o CSS permite a quebra natural. */}
           <TextReveal
             as="h2"
-            className="display-md bleed"
-            lines={["Vestir a", "casa"]}
+            className={`display-md bleed ${styles.title}`}
+            lines={["Vista a casa"]}
           />
         </div>
 
@@ -45,7 +46,8 @@ export function Store() {
               data-cursor="Ver"
             >
               <Image
-                className={`photo ${styles.image}`}
+                // `photo` é o que força o P&B; a camiseta opta por sair dele.
+                className={`${product.grayscale === false ? "" : "photo"} ${styles.image}`}
                 src={product.image}
                 alt={product.alt}
                 width={product.width}
@@ -54,8 +56,6 @@ export function Store() {
               />
 
               <div className={styles.info}>
-                <span className={styles.category}>{product.category}</span>
-
                 <span className={styles.foot}>
                   <span className={styles.name}>{product.name}</span>
                   <span className={styles.price}>

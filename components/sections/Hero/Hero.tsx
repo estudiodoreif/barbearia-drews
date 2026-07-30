@@ -3,14 +3,12 @@
 import Image from "next/image";
 import { Fragment, useRef } from "react";
 
-import { Marquee } from "@/components/ui/Marquee";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { TextReveal } from "@/components/ui/TextReveal";
 import { useIntro } from "@/components/layout/Preloader";
 import { PHOTOS, type Photo } from "@/content/photos";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { EASE_GSAP } from "@/lib/motion";
-import { BOOKING_URL, SITE } from "@/lib/site";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 import { Clock } from "./Clock";
@@ -94,10 +92,14 @@ export function Hero() {
       </div>
 
       <div className={`container ${styles.center}`}>
-        {/* PLACEHOLDER de copy — ROADMAP Fase 2 */}
+        {/*
+          Sem `display-xl` aqui, de propósito — ver Hero.module.css: a classe
+          global e a do módulo têm a mesma especificidade, e quem vencia
+          dependia da ordem no bundle.
+        */}
         <TextReveal
           as="h1"
-          className={`display-xl bleed ${styles.headline}`}
+          className={`bleed ${styles.headline}`}
           trigger="immediate"
           play={done}
           delay={0.1}
@@ -115,32 +117,17 @@ export function Hero() {
 
       </div>
 
-      <div data-hero-fade>
-        <Marquee text={SITE.motto} size="md" duration={28} />
-      </div>
+      {/*
+        Linha de metadados reduzida ao relógio.
+        Saíram daqui, a pedido do cliente: o parágrafo de apoio ("Corte e barba
+        em Jaraguá do Sul…"), o link "Marcar horário" e o marquee com a frase da
+        vitrine que corria acima. O Hero passa a ser rótulo + headline + hora.
 
+        Nota de conversão: com o CTA fora daqui e a navbar sem botão, o primeiro
+        caminho para agendar fica em Serviços, duas dobras abaixo.
+      */}
       <div className="container">
         <div className={styles.meta} data-hero-fade>
-          {/*
-            O subtexto morava solto entre a headline e o marquee, com um vão
-            grande dos dois lados. Aqui ele encosta no filete da linha de
-            metadados e passa a ler como legenda ancorada, não parágrafo
-            boiando no meio da tela.
-          */}
-          <p className={`${styles.subtext} muted`}>
-            Corte e barba em {SITE.city}. Agendamento on-line ou por ordem de
-            chegada.
-          </p>
-
-          <a
-            href={BOOKING_URL}
-            className={styles.cta}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Marcar horário <span aria-hidden="true">→</span>
-          </a>
-
           <span className={`label ${styles.metaRight} ${styles.clock}`}>
             <Clock />
           </span>

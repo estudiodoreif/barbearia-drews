@@ -1,13 +1,14 @@
 /*
  * typography.css — classes utilitárias de tipo, DESIGN.md §4.
  *
- * Duas famílias no site inteiro: Barlow Condensed (display) e Inter (corpo).
- * O logo blackletter é imagem, nunca fonte — e aparece em exatamente dois
- * lugares: navbar e assinatura do rodapé.
+ * **Uma família no site inteiro: Barlow Condensed.** A Inter, que cobria corpo
+ * e rótulos, saiu do projeto. O logo blackletter é imagem, nunca fonte — e
+ * aparece em exatamente um lugar: a navbar.
  *
- * Os labels/eyebrows usam a fonte de CORPO com tracking largo em caixa alta.
- * DESIGN.md §4 sugere mono como alternativa, mas também limita o site a duas
- * famílias, e uma mono seria a terceira.
+ * Com família única, a hierarquia passa a vir só de **corpo, peso, caixa e
+ * tracking** — não há mais o contraste de desenho entre duas fontes para
+ * separar título de legenda. Daí os labels manterem o tracking largo em caixa
+ * alta: é o que os diferencia do texto corrido agora que a família é a mesma.
  */
 
 .display-xl,

@@ -47,16 +47,29 @@
 
 /*
  * Escala própria, menor que `.display-xl`, porque cada linha carrega um chip de
- * foto inline e precisa caber numa linha só.
+ * foto inline, é indivisível a partir de 768px e precisa caber na largura útil.
  *
- * A conta: em Barlow Condensed, "o corte ▮ certo" ocupa ~7.2em (o chip sozinho
- * come 1.5em). Com a largura útil de 1472px (container 1600 menos os gutters),
- * o teto seguro é 1472/7.2 ≈ 204px — e o display-xl vai a 208px, o que fazia a
- * linha quebrar e jogar o chip sozinho para a linha de baixo.
+ * **Esta classe declara o estilo de display inteiro, e não só o `font-size`.**
+ * Antes o `<h1>` levava `display-xl` (global) + `.headline` (módulo) juntos.
+ * As duas têm a mesma especificidade — uma classe — então quem ganhava era
+ * quem viesse por último no CSS. Em dev vinha o módulo (99px, correto); no
+ * bundle de produção a ordem invertia e valia o `--text-display-xl` (208px).
+ * A linha estourava a largura útil e, com `overflow: hidden` na seção, era
+ * **cortada**: "CERTO" virava "CER". Bug que só aparecia em produção.
+ *
+ * A conta do teto: em Barlow Condensed, "no tempo ▮ certo" — a linha mais
+ * longa — ocupa ~10.6em contando o chip (1.5em) e suas margens. Com a largura
+ * útil de 1472px (container 1600 menos os gutters), o teto é
+ * 1472/10.6 ≈ 138px ≈ 8.6rem.
  */
 .headline {
   width: 100%;
-  font-size: clamp(2.75rem, 1rem + 7.6vw, 10.5rem);
+  font-family: var(--font-family-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  font-size: clamp(2.5rem, 0.75rem + 5.9vw, 8.25rem);
 }
 
 /*
@@ -93,65 +106,27 @@
 }
 
 /*
- * Legenda do hero. Vive na linha de metadados, encostada no filete — antes era
- * um parágrafo solto sob a headline, com vão largo dos dois lados.
- */
-.subtext {
-  max-width: 34ch;
-  font-size: var(--text-small);
-  line-height: 1.5;
-}
-
-/*
- * Linha de metadados no pé — o padrão de linha miúda das referências
- * (legenda / ação / hora), no lugar de um botão grande de CTA.
+ * Linha de metadados no pé, agora só com a hora.
+ *
+ * Tinha três células (legenda / CTA / hora); as duas primeiras saíram a pedido
+ * do cliente, junto com o marquee. Sobrou o filete e o relógio alinhado à
+ * direita — o que é, no fim, o mais próximo da linha miúda das referências.
  */
 .meta {
   border-top: var(--border-hairline) solid var(--color-border);
   padding-block: var(--space-5);
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 @media (min-width: 768px) {
   .meta {
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: var(--space-8);
-    text-align: left;
+    justify-content: flex-end;
   }
 
   .metaRight {
     text-align: right;
   }
-}
-
-/* No mobile a legenda centraliza junto com o resto da linha */
-@media (max-width: 767px) {
-  .subtext {
-    max-width: none;
-  }
-}
-
-/* CTA discreto: link sublinhado, não botão */
-.cta {
-  display: inline-flex;
-  align-items: center;
-  /* `justify-self` e não `text-align` no pai: como item de grid, o
-   * `inline-flex` é blockificado para `flex` e passa a preencher a célula,
-   * então o alinhamento de texto do pai não o centraliza. */
-  justify-self: center;
-  gap: var(--space-2);
-  font-size: var(--text-body);
-  border-bottom: var(--border-hairline) solid var(--color-text);
-  padding-bottom: 2px;
-  transition: opacity var(--dur-fast) var(--ease-out);
-}
-
-.cta:hover {
-  opacity: 0.6;
 }
 
 .clock {

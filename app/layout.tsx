@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Barlow_Condensed, Inter } from "next/font/google";
+import { Barlow_Condensed } from "next/font/google";
 
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
@@ -20,23 +20,23 @@ import {
 import "./globals.css";
 
 /**
- * Duas famílias, como manda DESIGN.md §4 — e só duas.
+ * **Uma família só.** A Inter saiu do projeto: display e corpo passam a ser
+ * Barlow Condensed, por decisão do cliente. O site fica mono-família.
  *
  * Barlow Condensed é família **estática** (não variável), então os pesos vêm
- * declarados um a um e cada um é um arquivo. Só os três que o site usa:
- * 400 para o display leve, 600 para títulos de seção, 700 para o hero.
- * Pedir a faixa inteira 100–900 seriam nove downloads sem uso.
+ * declarados um a um e cada um é um arquivo. Entrou o 500 junto com os três
+ * que já existiam: com a condensada assumindo também rótulos e texto corrido,
+ * o 400 puro fica fino demais em corpo pequeno. Pedir a faixa inteira 100–900
+ * seriam nove downloads sem uso.
+ *
+ * As duas variáveis apontam para a mesma fonte de propósito: `--font-display`
+ * e `--font-body` continuam descrevendo o **papel** de cada uma, e um dia
+ * podem voltar a divergir sem tocar nos ~10 arquivos que as consomem.
  */
-const display = Barlow_Condensed({
+const condensed = Barlow_Condensed({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-body",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -146,7 +146,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${display.variable} ${inter.variable}`}>
+    <html lang="pt-BR" className={condensed.variable}>
       <body>
         {/* Dados estruturados do negócio. O conteúdo é gerado no servidor a
             partir de lib/site.ts — não há entrada de usuário aqui, então o

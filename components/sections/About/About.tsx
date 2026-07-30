@@ -9,39 +9,32 @@ import { TextReveal } from "@/components/ui/TextReveal";
 import { PHOTOS } from "@/content/photos";
 import { STATS } from "@/content/stats";
 import { BARBERS } from "@/content/services";
-import { SITE } from "@/lib/site";
 import { useParallax } from "@/hooks/useParallax";
 
 import { StatValue } from "./StatValue";
 import styles from "./About.module.css";
 
 /**
- * Sobre.
+ * Sobre — três tempos empilhados: título, foto de largura total, parágrafo,
+ * banda de números.
  *
- * Reconstruída sobre uma característica da curadoria: **todas as fotos têm
- * fundo quase branco**, o mesmo `--color-bg-alt` (#fafaf8) desta seção. Isso
- * permite exibi-las **sem moldura nenhuma** — sem caixa, sem borda, sem
- * `background-color`, sem `aspect-ratio` recortando. O fundo da foto dissolve
- * na página e sobra o sujeito flutuando no papel.
+ * Terceira versão da seção. As duas anteriores tentaram composições em
+ * camadas (foto subindo acima da linha do texto, foto menor invadindo a calha)
+ * e as duas falharam pelo mesmo motivo: **imagem sobrepondo texto**. A cada
+ * ajuste de `left`/`bottom` a colisão reaparecia em outra largura de tela,
+ * porque a sobreposição dependia de porcentagens que mudam com o viewport.
  *
- * É o oposto da versão anterior, que era duas colunas empatadas dentro de
- * retângulos cinza — o arranjo mais previsível possível e o ponto mais fraco
- * da página.
+ * Aqui não há um único `position: absolute` — a seção é uma pilha vertical, e
+ * a colisão deixa de ser possível por construção, não por calibragem. O ritmo
+ * vem da alternância entre largura total (a foto sangra de borda a borda) e
+ * coluna estreita (o parágrafo, centrado e curto), que é o compasso de revista.
  *
- * A composição agora trabalha em contratempo: a citação abre a seção em tipo
- * grande, a primeira foto sobe acima da linha do texto, a segunda invade a
- * calha entre as colunas, e as duas derivam em velocidades diferentes no
- * scroll. Sem moldura, é a **deriva desigual** que separa as camadas — não
- * sombra, não borda.
+ * A foto segue sem moldura: fundo claro do arquivo dissolvendo no
+ * `--color-bg-alt` da seção, sem caixa nem borda. Ver content/photos.ts.
  */
 export function About() {
-  const principal = useRef<HTMLDivElement>(null);
-  const secundaria = useRef<HTMLDivElement>(null);
-
-  // Intensidades diferentes e de sinais opostos: é o descolamento entre as
-  // duas que cria profundidade quando não há moldura marcando os planos.
-  useParallax(principal, 16);
-  useParallax(secundaria, -10);
+  const media = useRef<HTMLDivElement>(null);
+  useParallax(media, 10);
 
   return (
     <section id="sobre" className={`section ${styles.about}`} data-theme="light">
@@ -54,58 +47,33 @@ export function About() {
             lines={["Uma barbearia que", "leva o corte a sério"]}
           />
         </div>
+      </div>
 
-        {/* 1 — Abertura em citação. A frase da vitrine é a copy mais autêntica
-            da marca; aqui ela abre a seção em vez de ficar espremida numa
-            coluna lateral. */}
-        <figure className={styles.opening}>
-          <blockquote className={styles.quote}>{SITE.motto}</blockquote>
-          <figcaption className={`label ${styles.openingCaption}`}>
-            Frase na vitrine da barbearia
-          </figcaption>
-        </figure>
-
-        {/* 2 — Faixa de contratempo: imagem e texto se encaixam em vez de se
-            enfileirar. */}
-        <div className={styles.interlock}>
-          <Reveal className={styles.mediaMain}>
-            <div ref={principal} className={styles.drift}>
-              <Image
-                className="photo"
-                src={PHOTOS.espelhoReflexo.src}
-                alt={PHOTOS.espelhoReflexo.alt}
-                width={PHOTOS.espelhoReflexo.width}
-                height={PHOTOS.espelhoReflexo.height}
-                sizes="(min-width: 768px) 42vw, 100vw"
-              />
-            </div>
-          </Reveal>
-
-          <Reveal className={styles.text}>
-            <p className="body measure">
-              Na DREWS, cada corte começa antes da tesoura: é entender a
-              estrutura, o gesto certo, o tempo de cada cliente. Aprendemos, dia
-              após dia, que o caminho do sucesso não pula etapas — ele se
-              constrói com trabalho bem feito e humildade para sempre aprender
-              mais.
-            </p>
-
-            <div className={styles.mediaAside}>
-              <div ref={secundaria} className={styles.drift}>
-                <Image
-                  className="photo"
-                  src={PHOTOS.clienteRisada.src}
-                  alt={PHOTOS.clienteRisada.alt}
-                  width={PHOTOS.clienteRisada.width}
-                  height={PHOTOS.clienteRisada.height}
-                  sizes="(min-width: 768px) 26vw, 60vw"
-                />
-              </div>
-            </div>
-          </Reveal>
+      {/* Fora do `.container` de propósito: a foto vai de borda a borda da
+          viewport, e é esse corte que dá a escala da seção. */}
+      <Reveal className={styles.mediaFull}>
+        <div ref={media} className={styles.drift}>
+          <Image
+            className="photo"
+            src={PHOTOS.maosEnquadrando.src}
+            alt={PHOTOS.maosEnquadrando.alt}
+            width={PHOTOS.maosEnquadrando.width}
+            height={PHOTOS.maosEnquadrando.height}
+            sizes="100vw"
+          />
         </div>
+      </Reveal>
 
-        {/* 3 — Banda de números e barbeiros, largura total, com réguas. */}
+      <div className="container">
+        <Reveal className={styles.textBlock}>
+          <p className={`body ${styles.text}`}>
+            Na DREWS, cada corte começa antes da tesoura: é entender a
+            estrutura, o gesto certo, o tempo de cada cliente. Aprendemos, dia
+            após dia, que o caminho do sucesso não pula etapas — ele se constrói
+            com trabalho bem feito e humildade para sempre aprender mais.
+          </p>
+        </Reveal>
+
         <div className={styles.band}>
           {STATS.map((stat) => (
             <div key={stat.label} className={styles.cell}>
@@ -130,19 +98,6 @@ export function About() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* 4 — Fecho em still life. Sangra pela borda direita: é clima, não
-          informação, e o corte reforça isso. */}
-      <div className={styles.closing} aria-hidden="true">
-        <Image
-          className="photo"
-          src={PHOTOS.maquinaBase.src}
-          alt=""
-          width={PHOTOS.maquinaBase.width}
-          height={PHOTOS.maquinaBase.height}
-          sizes="(min-width: 768px) 22vw, 44vw"
-        />
       </div>
     </section>
   );

@@ -179,11 +179,11 @@
   height: 100%;
   border: 0;
   /*
-   * Mesmo tratamento das fotos (`.photo`): o mapa do Google chega colorido e
-   * quebraria a regra estrita P&B (DESIGN.md §3) no meio de uma seção clara.
-   * O contraste leve compensa o cinza lavado que o grayscale deixa.
+   * Sem `filter: grayscale()`, por decisão do cliente — exceção consciente a
+   * DESIGN.md §3, registrada lá. O mapa em P&B perdia a leitura imediata de
+   * "isto é um mapa": as vias, a água e as áreas verdes viravam tons de cinza
+   * quase iguais, e o pino sumia no meio.
    */
-  filter: grayscale(1) contrast(1.05);
 }
 
 @media (max-width: 767px) {

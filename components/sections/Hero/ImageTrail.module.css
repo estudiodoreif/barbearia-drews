@@ -13,11 +13,16 @@
   pointer-events: none;
 }
 
+/*
+ * Reduzido de `clamp(190px, 19vw, 320px)`. A 19vw numa tela de 2560px cada
+ * quadro saía com 320px e três deles já cobriam a headline inteira — o rastro
+ * deixava de ser atmosfera e virava o assunto.
+ */
 .item {
   position: absolute;
   top: 0;
   left: 0;
-  width: clamp(190px, 19vw, 320px);
+  width: clamp(130px, 11vw, 210px);
   aspect-ratio: 4 / 5;
   opacity: 0;
   overflow: hidden;

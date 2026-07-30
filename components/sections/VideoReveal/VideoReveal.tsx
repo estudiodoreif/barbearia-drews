@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import { VIDEOS } from "@/content/media";
 import { useHeroVideoScroll } from "@/hooks/useHeroVideoScroll";
 
@@ -19,21 +21,66 @@ import styles from "./VideoReveal.module.css";
 export function VideoReveal() {
   useHeroVideoScroll();
 
-  const video = VIDEOS.barba;
+  const section = useRef<HTMLElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
+
+  /*
+   * Dispara a reprodução quando a seção entra em cena.
+   *
+   * O `autoPlay` do atributo não bastava no mobile. Os atributos chegam certos
+   * no HTML servido (`autoplay muted loop playsinline` — conferido no
+   * prerender), mas no mobile esta seção nasce **fora da viewport**: navegador
+   * móvel não inicia a reprodução de um vídeo que nunca apareceu, e como ele
+   * nunca começa, também não retoma sozinho ao entrar. Daí ter que apertar play.
+   *
+   * O `muted` é reafirmado por propriedade porque a política de autoplay a lê
+   * no instante do `play()` — reforçar aqui fecha a janela em que o React ainda
+   * não a aplicou.
+   *
+   * `play()` devolve uma promise que **rejeita** quando o sistema recusa; iOS em
+   * Modo de Baixo Consumo é o caso comum. Aí não há o que fazer: o pôster fica
+   * no lugar, degradação aceitável para um elemento decorativo. O `catch` existe
+   * para isso não virar erro não tratado no console.
+   */
+  useEffect(() => {
+    const el = section.current;
+    const media = video.current;
+    if (!el || !media) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        media.muted = true;
+        void media.play().catch(() => {});
+      },
+      // 10% já basta: quanto antes começar, menor a chance de alguém ver o
+      // pôster parado.
+      { threshold: 0.1 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const asset = VIDEOS.barba;
 
   return (
-    <section id="video-reveal" className={styles.videoReveal}>
+    <section id="video-reveal" ref={section} className={styles.videoReveal}>
       <video
+        ref={video}
         className={styles.video}
-        src={video.src}
-        poster={video.poster}
-        width={video.width}
-        height={video.height}
+        src={asset.src}
+        poster={asset.poster}
+        width={asset.width}
+        height={asset.height}
         autoPlay
         muted
         loop
         // Sem isto o iOS abre o vídeo em tela cheia e sequestra a página.
         playsInline
+        // O primeiro frame chega antes de a seção subir; o resto vem em
+        // streaming, sem custar banda de quem nunca rolar até aqui.
+        preload="metadata"
         // Decorativo: nenhuma informação depende dele.
         aria-hidden="true"
         tabIndex={-1}

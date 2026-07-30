@@ -132,12 +132,39 @@ export function Cursor() {
 
   if (!active) return null;
 
+  /*
+   * Sem elemento em volta, de propósito.
+   *
+   * Havia aqui um `<div class="cursor">` com `position: fixed` e `z-index`
+   * envolvendo os dois — e era ele que fazia o cursor sumir no branco.
+   * `position` + `z-index` criam um *stacking context*, e `mix-blend-mode`
+   * mescla apenas com o que foi pintado dentro do contexto do ancestral. As
+   * peças brancas passavam a mesclar contra o nada (o wrapper é transparente)
+   * em vez de contra a página, então sobre fundo branco continuavam brancas.
+   *
+   * Como filhos diretos do `<body>`, o backdrop do blend volta a ser a página
+   * inteira: `difference` devolve preto sobre claro e branco sobre escuro —
+   * inclusive por cima de foto, que é o caso onde trocar a cor por seção
+   * erraria.
+   *
+   * Consequência: o `data-state` vive nos dois elementos, não num pai comum.
+   */
   return (
-    <div className={styles.cursor} data-state={state} aria-hidden="true">
-      <div ref={dot} className={styles.dot} />
-      <div ref={ring} className={styles.ring}>
+    <>
+      <div
+        ref={dot}
+        className={styles.dot}
+        data-state={state}
+        aria-hidden="true"
+      />
+      <div
+        ref={ring}
+        className={styles.ring}
+        data-state={state}
+        aria-hidden="true"
+      >
         <span className={styles.label}>{label}</span>
       </div>
-    </div>
+    </>
   );
 }

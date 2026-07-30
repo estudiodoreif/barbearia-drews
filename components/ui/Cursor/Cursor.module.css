@@ -4,6 +4,12 @@
  * A regra que esconde o cursor nativo (`.hideNative`) é aplicada por JS, não
  * declarada globalmente: se o componente não montar, o cursor do sistema
  * continua — página sem cursor nenhum é página inutilizável.
+ *
+ * **Não envolver estes dois elementos num container posicionado.** Ver o
+ * comentário em Cursor.tsx: qualquer ancestral com `position` + `z-index`
+ * (ou `filter`, `transform`, `opacity < 1`, `isolation`) cria um stacking
+ * context e o `mix-blend-mode` deixa de enxergar a página — o cursor some no
+ * fundo branco.
  */
 
 .hideNative,
@@ -22,23 +28,25 @@
   cursor: auto !important;
 }
 
-.cursor {
-  position: fixed;
-  inset: 0;
-  z-index: calc(var(--z-preloader) + 10);
-  pointer-events: none;
-}
-
 .dot,
 .ring {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: calc(var(--z-preloader) + 10);
   opacity: 0;
+  pointer-events: none;
   /* O GSAP escreve `x`/`y` em transform; estes -50% centram o desenho no
    * ponto exato do cursor sem que o JS precise saber o tamanho de cada peça. */
   translate: -50% -50%;
   will-change: transform;
+  /*
+   * `difference` resolve claro e escuro com uma regra só: sobre preto sai
+   * branco, sobre branco sai preto. É o que mantém o cursor visível cruzando
+   * as seções e, principalmente, por cima das fotos — onde uma cor fixa por
+   * seção sempre falharia em alguma região.
+   */
+  mix-blend-mode: difference;
 }
 
 .dot {
@@ -50,13 +58,6 @@
    * apagar o outro a cada frame. */
   scale: 1;
   transition: scale var(--dur-fast) var(--ease-out);
-  /*
-   * `difference` resolve claro e escuro com uma regra só: sobre preto o ponto
-   * sai branco, sobre branco sai preto. É o que mantém o cursor visível
-   * cruzando as seções e, principalmente, por cima das fotos — onde uma cor
-   * fixa sempre falharia em alguma região.
-   */
-  mix-blend-mode: difference;
 }
 
 .ring {
@@ -66,7 +67,6 @@
   width: 34px;
   height: 34px;
   border: 1px solid #fff;
-  mix-blend-mode: difference;
   /*
    * Só tamanho. `opacity` fica fora de propósito: quem a controla é o GSAP
    * (entrada e saída do cursor na janela), e uma transição CSS na mesma
@@ -79,19 +79,19 @@
 }
 
 /* Sobre link/botão: o anel cresce e o ponto encolhe até sumir */
-.cursor[data-state="link"] .ring {
+.ring[data-state="link"] {
   width: 56px;
   height: 56px;
 }
 
 /* Com rótulo, o anel abre espaço para o texto */
-.cursor[data-state="label"] .ring {
+.ring[data-state="label"] {
   width: 84px;
   height: 84px;
 }
 
-.cursor[data-state="link"] .dot,
-.cursor[data-state="label"] .dot {
+.dot[data-state="link"],
+.dot[data-state="label"] {
   scale: 0;
 }
 
@@ -111,6 +111,6 @@
   white-space: nowrap;
 }
 
-.cursor[data-state="label"] .label {
+.ring[data-state="label"] .label {
   opacity: 1;
 }

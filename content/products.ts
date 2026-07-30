@@ -1,8 +1,14 @@
 export type Product = {
   name: string;
   price: number;
-  /** Agrupador exibido no topo do card. */
-  category: "Vestuário";
+  /**
+   * `false` desliga o tratamento P&B só neste produto.
+   *
+   * Existe por causa da camiseta: é a única peça fotografada **numa pessoa**, e
+   * em escala de cinza o modelo lia como item esgotado, não como produto. É uma
+   * exceção consciente a DESIGN.md §3 — registrada lá.
+   */
+  grayscale?: boolean;
   /** Mockup do produto — vira o fundo do card. */
   image: string;
   alt: string;
@@ -31,7 +37,7 @@ export const PRODUCTS: readonly Product[] = [
   {
     name: "Camiseta",
     price: 89.9, // PROVISÓRIO: confirmar com o cliente
-    category: "Vestuário",
+    grayscale: false,
     image: "/images/produto/camiseta.jpg",
     alt: "Camiseta preta oversized com o wordmark DREWS no peito",
     width: 896,
@@ -40,7 +46,6 @@ export const PRODUCTS: readonly Product[] = [
   {
     name: "Moletom",
     price: 189.9, // PROVISÓRIO: confirmar com o cliente
-    category: "Vestuário",
     image: "/images/produto/moletom.jpg",
     alt: "Moletom preto com capuz e o wordmark DREWS centralizado",
     width: 896,
@@ -49,7 +54,6 @@ export const PRODUCTS: readonly Product[] = [
   {
     name: "Jaqueta",
     price: 289.9, // PROVISÓRIO: confirmar com o cliente
-    category: "Vestuário",
     image: "/images/produto/jaqueta.jpg",
     alt: "Jaqueta bomber preta com o wordmark DREWS no peito",
     width: 896,
@@ -58,7 +62,6 @@ export const PRODUCTS: readonly Product[] = [
   {
     name: "Boné",
     price: 69.9, // PROVISÓRIO: confirmar com o cliente
-    category: "Vestuário",
     image: "/images/produto/bone.jpg",
     alt: "Boné preto com o wordmark DREWS bordado em branco",
     width: 896,

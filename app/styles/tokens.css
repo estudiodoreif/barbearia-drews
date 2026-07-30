@@ -37,11 +37,15 @@
   --ctx-surface: var(--color-surface);
 
   /* ---------------------------------------------------------------
-   * Tipografia — DESIGN.md §4. Duas famílias, no máximo.
-   * As variáveis --font-* vêm de next/font em app/layout.tsx.
+   * Tipografia — DESIGN.md §4. **Uma família só:** Barlow Condensed.
+   *
+   * Os dois tokens apontam para a mesma pilha. Ficaram separados de propósito:
+   * continuam nomeando o papel (display vs. corpo) nos ~10 arquivos que os
+   * consomem, e podem voltar a divergir sem uma varredura no projeto.
+   * `--font-display` vem de next/font em app/layout.tsx.
    * ------------------------------------------------------------- */
   --font-family-display: var(--font-display), "Arial Narrow", sans-serif;
-  --font-family-body: var(--font-body), system-ui, sans-serif;
+  --font-family-body: var(--font-display), "Arial Narrow", sans-serif;
 
   /*
    * Escala fluida: mínimo em 375px, máximo em 1600px.
@@ -54,17 +58,27 @@
   --text-display-lg: clamp(3.25rem, 1.5rem + 9vw, 9rem);
   --text-display-md: clamp(2.25rem, 1.4rem + 4.4vw, 5rem);
   --text-heading: clamp(1.625rem, 1.2rem + 1.8vw, 2.75rem);
-  --text-body-lg: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
-  --text-body: 1rem;
-  --text-small: 0.875rem;
-  --text-label: 0.6875rem;
+  /*
+   * Corpo e apoio subiram ~8% com a troca para condensada. Barlow Condensed
+   * tem altura-x menor e caractere mais estreito que a Inter, então no mesmo
+   * `font-size` ela lê visivelmente menor — sem essa compensação, legenda e
+   * texto corrido ficariam abaixo do confortável.
+   */
+  --text-body-lg: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --text-body: 1.0625rem;
+  --text-small: 0.9375rem;
+  --text-label: 0.75rem;
 
-  /* Entrelinha justa: condensada em caixa alta não tem descendentes longos,
-   * então linhas quase se tocando é o que dá o bloco tipográfico sólido das
-   * referências do grupo B. */
+  /* Entrelinha justa no display: condensada em caixa alta não tem descendentes
+   * longos, então linhas quase se tocando é o que dá o bloco tipográfico sólido
+   * das referências do grupo B.
+   *
+   * Já o corpo pede o contrário — linha condensada é mais estreita, cabem mais
+   * caracteres por linha, e o olho precisa de mais espaço vertical para achar
+   * a linha seguinte. Daí 1.7 e não os 1.6 de antes. */
   --leading-display: 0.84;
   --leading-heading: 1;
-  --leading-body: 1.6;
+  --leading-body: 1.7;
 
   /* Tracking negativo mais forte no display — a condensada aguenta e é o que
    * fecha o bloco. Já o label vai no extremo oposto: miúdo e muito espaçado. */

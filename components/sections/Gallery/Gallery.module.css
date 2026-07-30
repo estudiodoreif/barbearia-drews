@@ -17,13 +17,38 @@
  * altura é travada e a trilha é dimensionada pela ALTURA (ver `.frame`), não
  * pela largura.
  */
+/*
+ * A seção é pinada e tem `overflow: hidden`: o que não couber em 100svh é
+ * **cortado**, não empurrado. Era esse o "final da galeria sendo cortado".
+ *
+ * A causa era cada item ter altura própria em `svh` (52svh, 64svh, 70svh):
+ * numa janela de 800px o maior dava 560px e, somado ao cabeçalho, aos paddings
+ * e à legenda, o total passava de 959px contra 802px de viewport.
+ *
+ * A correção é medir em vez de estimar: `height` fixo (não `min-height`), e a
+ * trilha recebe por `flex: 1` exatamente o que sobra depois do cabeçalho e da
+ * legenda. Os itens são percentuais dessa altura, então a proporção entre eles
+ * se mantém em qualquer janela e nenhum pode estourar. Sem número mágico para
+ * recalibrar quando o cabeçalho mudar de tamanho.
+ */
 @media (min-width: 768px) {
   .gallery {
-    min-height: 100svh;
+    height: 100svh;
+    /* Piso para janelas muito baixas, onde espremer viraria tarja. */
+    min-height: 520px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding-block: var(--space-16);
+  }
+
+  .inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* Sem isto o item flex se recusa a encolher abaixo do conteúdo e o
+     * `flex: 1` da trilha não tem efeito. */
+    min-height: 0;
   }
 }
 
@@ -45,7 +70,13 @@
  */
 .track {
   display: flex;
-  align-items: flex-start;
+  /*
+   * Centro, não topo. Com as fotos em alturas diferentes, alinhar pelo topo
+   * criaria uma linha reta em cima e um serrilhado embaixo — o alinhamento
+   * central deixa a variação acontecer nas duas pontas, que é o que dá o ar
+   * orgânico em vez de "grade com sobras".
+   */
+  align-items: center;
   gap: var(--space-4);
   padding-inline: var(--gutter);
   overflow-x: auto;
@@ -68,19 +99,15 @@
   }
 }
 
+/*
+ * O `.frame` que envolvia cada foto saiu junto com as legendas: sem caption
+ * abaixo, a `<figure>` já é o próprio recorte.
+ */
 .item {
   flex: 0 0 auto;
   width: 68vw;
-  scroll-snap-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.frame {
-  position: relative;
-  width: 100%;
   aspect-ratio: 3 / 4;
+  scroll-snap-align: center;
   background-color: var(--ctx-surface);
   overflow: hidden;
 }
@@ -90,53 +117,63 @@
  * `aspect-ratio`, a largura é derivada. Assim as fotos nunca estouram a altura
  * da seção pinada — o que aconteceria se a largura mandasse (26vw numa tela
  * larga e baixa daria uma foto mais alta que a tela).
+ *
+ * **Formatos orgânicos:** em vez de um tamanho único, cinco combinações de
+ * proporção e altura se alternam por `nth-child(5n)`. O ciclo de 5 sobre 11
+ * fotos nunca fecha uma repetição visível — se fosse 2 ou 3, o olho pegaria o
+ * padrão e voltaria a ler como grade.
  */
 @media (min-width: 768px) {
+  .track {
+    /* Recebe o que sobrar da coluna — ver o comentário em `.gallery`. */
+    flex: 1;
+    min-height: 0;
+  }
+
   .item {
     width: auto;
   }
 
-  .frame {
-    width: auto;
-    height: 52svh;
+  /* 1 — retrato alto */
+  .item:nth-child(5n + 1) {
+    height: 88%;
+    aspect-ratio: 2 / 3;
   }
 
-  /*
-   * Uma imagem maior quebra o ritmo regular e cria o ponto de foco da
-   * referencia_06. Fica no 2º item: é o `barba`, a melhor imagem autêntica que
-   * existe. O 3º (`apresentacao`) é vídeo-selfie de celular e não sustenta o
-   * destaque.
-   */
-  .item:nth-child(2) .frame {
-    height: 64svh;
+  /* 2 — paisagem baixa e larga */
+  .item:nth-child(5n + 2) {
+    height: 58%;
+    aspect-ratio: 16 / 9;
+  }
+
+  /* 3 — quadrado médio */
+  .item:nth-child(5n + 3) {
+    height: 72%;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* 4 — o destaque: o maior da série, quebra o ritmo */
+  .item:nth-child(5n + 4) {
+    height: 100%;
     aspect-ratio: 4 / 5;
+  }
+
+  /* 5 — retrato compacto */
+  .item:nth-child(5n) {
+    height: 66%;
+    aspect-ratio: 3 / 4;
   }
 }
 
-.frame img {
+.item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform var(--dur-slow) var(--ease-out);
 }
 
-.item:hover .frame img {
+.item:hover img {
   transform: scale(1.04);
-}
-
-/* Legenda numerada sob cada foto, com filete acima — o padrão de caption das
- * referências do grupo A (Katie Hunter usa `[ THE COOL EFFECT ]`). */
-/*
- * Índice e texto juntos à esquerda, não nas duas pontas: com as fotos largas,
- * o índice de um item ficava colado no texto do item anterior e a leitura
- * embaralhava ("03 … A CASA 04 … BARBA").
- */
-.caption {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
-  padding-top: var(--space-2);
-  border-top: var(--border-hairline) solid var(--ctx-border);
 }
 
 .hint {

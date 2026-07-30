@@ -1,16 +1,18 @@
 /*
- * Sobre.
+ * Sobre — três tempos empilhados.
  *
- * A regra que organiza tudo aqui: **nenhuma foto tem moldura.** Não há
- * `background-color`, `border`, `aspect-ratio` nem `overflow: hidden` em volta
- * de imagem nenhuma. As fotos da curadoria têm fundo quase branco, igual ao
- * `--color-bg-alt` desta seção, então a borda do arquivo simplesmente não se
- * vê — sobra o sujeito flutuando no papel.
+ * Duas regras que valem para qualquer edição futura desta seção:
  *
- * Consequência prática, e o motivo deste comentário existir: ao trocar
- * qualquer foto desta seção, **usar uma de fundo claro**. Uma foto com fundo
- * escuro vira um retângulo preto no meio do branco e derruba a composição
- * inteira. Ver content/photos.ts.
+ * 1. **Nada de `position: absolute`.** As duas versões anteriores compunham em
+ *    camadas e as duas acabaram com imagem em cima de texto: a sobreposição
+ *    dependia de porcentagens, e o que estava calibrado numa largura colidia em
+ *    outra. A pilha vertical torna a colisão impossível, não improvável.
+ *
+ * 2. **A foto não tem moldura.** Sem `background-color`, sem borda, sem
+ *    `aspect-ratio` recortando. As fotos da curadoria têm fundo quase branco,
+ *    igual ao `--color-bg-alt` desta seção, então a borda do arquivo não se vê.
+ *    Ao trocar a imagem daqui, usar uma de fundo claro — uma de fundo escuro
+ *    vira um retângulo preto no meio do papel.
  */
 
 .about {
@@ -18,129 +20,82 @@
   overflow: hidden;
 }
 
-/* ---- 1. Abertura em citação ---- */
-
-.opening {
-  margin-bottom: var(--space-32);
-}
-
-@media (min-width: 768px) {
-  .opening {
-    /* Recuada para dentro: a citação não começa na margem, o que a separa do
-     * título da seção sem precisar de régua. */
-    margin-left: 8.33%;
-  }
-}
+/* ---- Tempo 2: foto de largura total ---- */
 
 /*
- * A medida vive aqui, no elemento que de fato usa a display — e não no
- * `<figure>` em volta.
- *
- * `ch` resolve contra a fonte do próprio elemento: no figure (fonte de corpo,
- * 16px) 30ch dava ~240px e a citação quebrava uma palavra por linha. Aqui, com
- * Barlow Condensed no corpo de display, 20ch é a largura que fecha a frase em
- * três linhas cheias.
+ * Sangra de borda a borda da viewport. Vive fora do `.container` no JSX, então
+ * não precisa de truque de margem negativa.
  */
-.quote {
-  font-family: var(--font-family-display);
-  font-size: var(--text-display-md);
-  font-weight: var(--weight-medium);
-  line-height: 1.02;
-  letter-spacing: var(--tracking-display);
-  text-transform: uppercase;
-  max-width: 20ch;
-  /* Compensa o side-bearing para a citação alinhar opticamente. */
-  margin-left: -0.05em;
-}
-
-.openingCaption {
-  display: block;
-  margin-top: var(--space-5);
-}
-
-/* ---- 2. Faixa de contratempo ---- */
-
-.interlock {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
+.mediaFull {
+  width: 100%;
+  margin-block: var(--space-16);
+  /*
+   * Altura travada em vez de derivada da imagem: em tela larga, 1376×768 em
+   * largura total daria mais de 1400px de altura e a foto sozinha ocuparia
+   * duas dobras.
+   */
+  height: clamp(260px, 42vw, 620px);
+  overflow: hidden;
 }
 
 @media (min-width: 768px) {
-  .interlock {
-    display: grid;
-    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
-    gap: var(--space-6);
-    align-items: end;
+  .mediaFull {
+    margin-block: var(--space-24);
   }
-
-  .mediaMain {
-    grid-column: 1 / span 5;
-    /*
-     * Sobe acima da linha do texto. É o que quebra o alinhamento de topo e
-     * dá o contratempo — com as duas colunas começando juntas, a composição
-     * volta a ser as "duas colunas empatadas" que esta seção era antes.
-     */
-    margin-top: calc(var(--space-24) * -1);
-  }
-
-  .text {
-    grid-column: 7 / span 6;
-    position: relative;
-    padding-bottom: var(--space-32);
-  }
-}
-
-.mediaMain img,
-.mediaAside img {
-  display: block;
-  width: 100%;
-  height: auto;
 }
 
 /*
- * Wrapper da deriva de scroll.
+ * Wrapper da deriva de scroll, com folga vertical.
  *
- * `useParallax` documenta que o alvo deve viver dentro de um container com
- * `overflow: hidden`, para a deriva não revelar a borda. Aqui é o contrário de
- * propósito: não há borda para revelar — a imagem inteira é que anda. O que
- * separa os dois planos é a diferença de velocidade entre esta foto e a outra,
- * não um recorte.
+ * `useParallax` desloca ±5% da altura do elemento. Sem esta sobra de 12% e o
+ * recuo de -6%, o recorte do pai mostraria uma faixa vazia no topo ou na base
+ * durante a deriva — é a mesma razão do `.parallaxInner` que existia antes
+ * nesta seção.
  */
 .drift {
+  position: relative;
+  top: -6%;
+  width: 100%;
+  height: 112%;
   will-change: transform;
 }
 
-/* Foto secundária, sobreposta ao canto inferior direito da principal */
-.mediaAside {
-  margin-top: var(--space-10);
-  width: 68%;
+.mediaFull img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-@media (min-width: 768px) {
-  .mediaAside {
-    position: absolute;
-    bottom: 0;
-    width: 46%;
-    /*
-     * `left` + `width` somam -4%: a borda direita da foto para logo antes do
-     * início da coluna de texto. Em -30% ela avançava 16% para dentro e comia
-     * as primeiras palavras de cada linha do parágrafo — sobreposição sobre
-     * imagem é composição, sobre texto é defeito.
-     */
-    left: -50%;
-    margin-top: 0;
-    /* Acima da principal: a menor precisa ler como camada da frente */
-    z-index: 2;
+/* ---- Tempo 3: parágrafo em coluna estreita ---- */
+
+/*
+ * Curto e centrado, depois da imagem de largura total. A alternância entre
+ * largura cheia e coluna estreita é o que dá o compasso da seção — em duas
+ * colunas lado a lado, o texto voltaria a competir com a foto.
+ */
+.textBlock {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--space-8) var(--space-24);
+}
+
+.text {
+  max-width: 54ch;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .text {
+    text-align: left;
   }
 }
 
-/* ---- 3. Banda de números e barbeiros ---- */
+/* ---- Tempo 4: banda de números e barbeiros ---- */
 
 .band {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-top: var(--space-24);
   border-top: var(--border-hairline) solid var(--ctx-border);
 }
 
@@ -193,32 +148,4 @@
 
 .barber:hover {
   opacity: 0.55;
-}
-
-/* ---- 4. Fecho em still life ---- */
-
-/*
- * Sangra pela borda direita da seção. O corte é o que declara que ela é clima
- * e não informação — uma foto inteira e centrada pediria legenda.
- */
-.closing {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .closing {
-    display: block;
-    position: absolute;
-    right: calc(var(--gutter) * -1);
-    bottom: 0;
-    width: 22%;
-    max-width: 320px;
-    pointer-events: none;
-  }
-
-  .closing img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
 }

@@ -22,6 +22,16 @@
   }
 }
 
+/*
+ * Título numa linha só no desktop; abaixo de 768px a quebra natural volta,
+ * senão "Vista a casa" reduziria demais para caber em 375px.
+ */
+@media (min-width: 768px) {
+  .title {
+    white-space: nowrap;
+  }
+}
+
 .card {
   position: relative;
   display: flex;
@@ -55,7 +65,8 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  /* Só o bloco da base agora: o rótulo de categoria que ficava no topo saiu. */
+  justify-content: flex-end;
   width: 100%;
   padding: var(--space-4);
 }
@@ -84,15 +95,6 @@
   );
   z-index: -1;
   pointer-events: none;
-}
-
-.category {
-  font-family: var(--font-family-body);
-  font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--ctx-muted);
 }
 
 /* Nome e preço na base, na mesma linha */
