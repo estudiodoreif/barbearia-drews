@@ -70,7 +70,7 @@ export function About() {
       <div className="container">
         <Reveal className={styles.textBlock}>
           <p className={styles.text}>
-            Na DREWS, cada corte começa antes da tesoura: é entender a
+            Na Barbearia Drews, cada corte começa antes da tesoura: é entender a
             estrutura, o gesto certo, o tempo de cada cliente. Aprendemos, dia
             após dia, que o caminho do sucesso não pula etapas — ele se constrói
             com trabalho bem feito e humildade para sempre aprender mais.

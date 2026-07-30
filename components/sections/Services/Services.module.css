@@ -141,11 +141,21 @@
   overflow: hidden;
 }
 
+/*
+ * No mobile a thumbnail **fica**, deitada.
+ *
+ * Estava escondida com o argumento de que sem hover ela viraria bloco
+ * decorativo — mas o crossfade também responde a `click`, então ela funciona no
+ * toque: tocar num serviço troca a foto. Escondê-la deixava a seção como uma
+ * lista de preços solta, sem nenhuma imagem.
+ *
+ * Em 3:4 ela ocuparia quase uma tela inteira num celular; em 4:3 vira uma
+ * faixa que acompanha a lista sem empurrar o resto para fora.
+ */
 @media (max-width: 767px) {
-  /* No mobile não há hover: a thumbnail viraria um bloco decorativo grande
-   * sem função, então sai. */
   .thumb {
-    display: none;
+    aspect-ratio: 4 / 3;
+    margin-top: var(--space-6);
   }
 }
 

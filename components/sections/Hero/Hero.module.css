@@ -81,7 +81,13 @@
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
   text-transform: uppercase;
-  font-size: clamp(2.75rem, 0.75rem + 6.4vw, 9rem);
+  /*
+   * O piso do `clamp` é o que vale no mobile: em 390px o termo `vw` dá ~37px,
+   * abaixo do mínimo, então a headline usa o mínimo puro. Subiu de 2.75rem
+   * para 3.4rem — lá as linhas quebram naturalmente (o `nowrap` só vale a
+   * partir de 768px), então crescer não arrisca o corte.
+   */
+  font-size: clamp(3.4rem, 0.75rem + 6.4vw, 9rem);
 }
 
 /*

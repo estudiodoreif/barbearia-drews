@@ -4,6 +4,12 @@
  *
  * A palavra gigante de fundo do referencia_13 (`.backdrop`) saiu na revisão de
  * UI — ver o comentário em Gallery.tsx.
+ *
+ * **O scroll horizontal pinado vale em todas as larguras.** Antes só existia a
+ * partir de 768px e no celular a trilha era um carrossel de scroll nativo: a
+ * página passava reto pela seção e só quem decidisse arrastar via as fotos. O
+ * único caminho que ainda devolve o scroll nativo é `prefers-reduced-motion`
+ * (bloco no fim do arquivo).
  */
 
 .gallery {
@@ -12,69 +18,50 @@
 }
 
 /*
- * Quando a seção é pinada, todo o conteúdo tem que caber numa tela — senão o
- * título fica coberto pela trilha, que é irmã dele e pinta depois. Por isso a
- * altura é travada e a trilha é dimensionada pela ALTURA (ver `.frame`), não
- * pela largura.
- */
-/*
  * A seção é pinada e tem `overflow: hidden`: o que não couber em 100svh é
- * **cortado**, não empurrado. Era esse o "final da galeria sendo cortado".
+ * **cortado**, não empurrado.
  *
- * A causa era cada item ter altura própria em `svh` (52svh, 64svh, 70svh):
- * numa janela de 800px o maior dava 560px e, somado ao cabeçalho, aos paddings
- * e à legenda, o total passava de 959px contra 802px de viewport.
+ * A altura é travada (`height`, não `min-height`) e a trilha recebe por
+ * `flex: 1` exatamente o que sobra depois do cabeçalho e da legenda. Os itens
+ * são percentuais dessa altura, então a proporção entre eles se mantém em
+ * qualquer janela e nenhum pode estourar — sem número mágico para recalibrar
+ * quando o cabeçalho mudar de tamanho.
  *
- * A correção é medir em vez de estimar: `height` fixo (não `min-height`), e a
- * trilha recebe por `flex: 1` exatamente o que sobra depois do cabeçalho e da
- * legenda. Os itens são percentuais dessa altura, então a proporção entre eles
- * se mantém em qualquer janela e nenhum pode estourar. Sem número mágico para
- * recalibrar quando o cabeçalho mudar de tamanho.
+ * `.gallery.gallery` — classe dobrada de propósito. A seção também leva a
+ * classe global `.section`, que define `padding-block: var(--section-padding)`
+ * (até 160px). As duas têm especificidade 0,1,0, então quem vencia era quem
+ * viesse por último no bundle — e no build de produção vencia a global,
+ * comendo a altura e zerando o scroll horizontal. 0,2,0 ganha sempre,
+ * independente da ordem. Ver CLAUDE.md.
  */
-@media (min-width: 768px) {
-  /*
-   * `.gallery.gallery` — classe dobrada de propósito.
-   *
-   * A seção também leva a classe global `.section`, que define
-   * `padding-block: var(--section-padding)` (até 160px). As duas têm
-   * especificidade 0,1,0, então quem vencia era quem viesse por último no
-   * bundle — e no build de produção vencia a global. Resultado: 320px de
-   * padding vertical comendo a altura, a trilha caindo para 246px e o scroll
-   * horizontal zerando, porque com fotos pequenas o conteúdo cabia inteiro na
-   * tela.
-   *
-   * É o mesmo tipo de colisão que cortava a headline do Hero. Lá a solução foi
-   * a classe global sair do elemento; aqui `.section` ainda serve (fundo, cor,
-   * filete entre seções), então o caminho é vencer por especificidade: 0,2,0
-   * ganha sempre, independente da ordem.
-   */
-  .gallery.gallery {
-    height: 100svh;
-    /* Piso para janelas muito baixas, onde espremer viraria tarja. */
-    min-height: 520px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: var(--space-16);
-  }
+.gallery.gallery {
+  height: 100svh;
+  /* Piso para janelas muito baixas, onde espremer viraria tarja. */
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: var(--space-10);
+}
 
-  .inner {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    /* Sem isto o item flex se recusa a encolher abaixo do conteúdo e o
-     * `flex: 1` da trilha não tem efeito. */
-    min-height: 0;
+@media (min-width: 768px) {
+  .gallery.gallery {
+    padding-block: var(--space-16);
   }
 }
 
 .inner {
   position: relative;
   z-index: var(--z-content);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* Sem isto o item flex se recusa a encolher abaixo do conteúdo e o
+   * `flex: 1` da trilha não tem efeito. */
+  min-height: 0;
 }
 
-/* Cabeçalho mais compacto aqui: a seção é pinada e cada pixel vertical do
- * cabeçalho sai da altura disponível para as fotos. */
+/* Cabeçalho compacto: cada pixel vertical dele sai da altura das fotos. */
 .head {
   margin-bottom: var(--space-6);
 }
@@ -88,9 +75,9 @@
 }
 
 /*
- * Trilha. No desktop o GSAP a desloca no eixo X conforme o scroll (seção
- * pinada). No mobile volta a ser scroll nativo com snap — pinar e amarrar o
- * scroll ao GSAP em aparelho fraco custa caro e engasga o gesto.
+ * Trilha movida pelo GSAP no eixo X conforme o scroll, com a seção pinada.
+ * `width: max-content` para o conteúdo definir a largura real, que é o que
+ * alimenta o cálculo da distância em Gallery.tsx.
  */
 .track {
   display: flex;
@@ -101,97 +88,82 @@
    * orgânico em vez de "grade com sobras".
    */
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   padding-inline: var(--gutter);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  /* Barra de rolagem escondida: a affordance é a legenda "role para navegar" */
-  scrollbar-width: none;
-}
-
-.track::-webkit-scrollbar {
-  display: none;
+  width: max-content;
+  flex: 1;
+  min-height: 0;
 }
 
 @media (min-width: 768px) {
   .track {
-    /* No desktop quem move é o GSAP; o overflow nativo tem que sair do caminho
-     * senão os dois disputam o mesmo eixo. */
-    overflow-x: visible;
-    scroll-snap-type: none;
-    width: max-content;
+    gap: var(--space-4);
   }
 }
 
 /*
  * O `.frame` que envolvia cada foto saiu junto com as legendas: sem caption
  * abaixo, a `<figure>` já é o próprio recorte.
+ *
+ * **Formatos orgânicos:** cinco combinações de proporção e altura se alternam
+ * por `nth-child(5n)`. O ciclo de 5 sobre 11 fotos nunca fecha uma repetição
+ * visível — se fosse 2 ou 3, o olho pegaria o padrão e voltaria a ler como
+ * grade.
+ *
+ * As alturas são percentuais da trilha, não `svh` soltos: assim a proporção
+ * entre os cinco formatos se mantém em qualquer tela e nenhum item estoura a
+ * seção pinada.
  */
 .item {
   flex: 0 0 auto;
-  width: 68vw;
-  aspect-ratio: 3 / 4;
-  scroll-snap-align: center;
   background-color: var(--ctx-surface);
   overflow: hidden;
+  /*
+   * Teto de largura para o mobile: com a altura mandando, um item 16/9 numa
+   * trilha de 440px daria ~780px de largura — o dobro da tela, e a foto
+   * sozinha viraria duas telas de arrasto.
+   */
+  max-width: 84vw;
 }
 
-/*
- * No desktop a trilha é dimensionada pela ALTURA: com `height` em svh mais
- * `aspect-ratio`, a largura é derivada. Assim as fotos nunca estouram a altura
- * da seção pinada — o que aconteceria se a largura mandasse (26vw numa tela
- * larga e baixa daria uma foto mais alta que a tela).
- *
- * **Formatos orgânicos:** em vez de um tamanho único, cinco combinações de
- * proporção e altura se alternam por `nth-child(5n)`. O ciclo de 5 sobre 11
- * fotos nunca fecha uma repetição visível — se fosse 2 ou 3, o olho pegaria o
- * padrão e voltaria a ler como grade.
- *
- * Os percentuais partem de 78%, não de 58%. Na primeira versão a menor foto
- * ficava com 58% de uma trilha que já é ~62% da seção — ~36% da altura total,
- * pequena demais. Fotos maiores também **alongam o scroll horizontal**, porque
- * a distância percorrida é `scrollWidth - clientWidth` e cresce junto com a
- * largura de cada item.
- */
+/* 1 — retrato alto */
+.item:nth-child(5n + 1) {
+  height: 92%;
+  aspect-ratio: 2 / 3;
+}
+
+/* 2 — paisagem baixa e larga */
+.item:nth-child(5n + 2) {
+  height: 78%;
+  aspect-ratio: 4 / 3;
+}
+
+/* 3 — quadrado médio */
+.item:nth-child(5n + 3) {
+  height: 86%;
+  aspect-ratio: 1 / 1;
+}
+
+/* 4 — o destaque: o maior da série, quebra o ritmo */
+.item:nth-child(5n + 4) {
+  height: 100%;
+  aspect-ratio: 4 / 5;
+}
+
+/* 5 — retrato compacto */
+.item:nth-child(5n) {
+  height: 82%;
+  aspect-ratio: 3 / 4;
+}
+
+/* No desktop há largura sobrando: a paisagem pode abrir para 16/9 */
 @media (min-width: 768px) {
-  .track {
-    /* Recebe o que sobrar da coluna — ver o comentário em `.gallery`. */
-    flex: 1;
-    min-height: 0;
-  }
-
   .item {
-    width: auto;
+    max-width: none;
   }
 
-  /* 1 — retrato alto */
-  .item:nth-child(5n + 1) {
-    height: 92%;
-    aspect-ratio: 2 / 3;
-  }
-
-  /* 2 — paisagem baixa e larga */
   .item:nth-child(5n + 2) {
-    height: 78%;
     aspect-ratio: 16 / 9;
-  }
-
-  /* 3 — quadrado médio */
-  .item:nth-child(5n + 3) {
-    height: 86%;
-    aspect-ratio: 1 / 1;
-  }
-
-  /* 4 — o destaque: o maior da série, quebra o ritmo */
-  .item:nth-child(5n + 4) {
-    height: 100%;
-    aspect-ratio: 4 / 5;
-  }
-
-  /* 5 — retrato compacto */
-  .item:nth-child(5n) {
-    height: 82%;
-    aspect-ratio: 3 / 4;
   }
 }
 
@@ -212,4 +184,43 @@
   gap: var(--space-2);
   margin-top: var(--space-6);
   padding-inline: var(--gutter);
+}
+
+/*
+ * Escape para quem pediu menos movimento.
+ *
+ * Sem o pin do GSAP (Gallery.tsx não cria o trigger neste caso), a trilha
+ * precisa voltar a ser um scroll nativo — senão ela fica parada mostrando só
+ * as primeiras fotos, sem jeito de chegar às outras.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .gallery.gallery {
+    height: auto;
+    min-height: 0;
+    display: block;
+    padding-block: var(--space-16);
+  }
+
+  .inner {
+    display: block;
+  }
+
+  .track {
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .item {
+    height: auto;
+    width: 68vw;
+    max-width: none;
+    aspect-ratio: 3 / 4;
+    scroll-snap-align: center;
+  }
 }

@@ -73,23 +73,39 @@
 /* ---- Tempo 3: parágrafo em coluna estreita ---- */
 
 /*
- * Alinhado à esquerda e encostado na margem do site — o mesmo eixo do rótulo
- * `[ SOBRE ]` e do título. Era centrado; à esquerda ele ancora na coluna de
- * leitura em vez de flutuar no meio da largura.
+ * Centrado de novo, mas numa caixa larga.
+ *
+ * A versão centrada anterior tinha 54ch, e numa tela larga isso virava uma
+ * coluna estreita boiando no meio de muito branco. Alargar a medida resolve o
+ * "solto no centro" sem abrir mão da simetria: o bloco passa a ocupar espaço
+ * suficiente para ler como um parágrafo posicionado, não como um bilhete.
  */
 .textBlock {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   padding-block: var(--space-8) var(--space-24);
 }
 
 .text {
-  max-width: 52ch;
+  /*
+   * ~76ch é largo para texto corrido — o confortável fica em 45–75. Aqui passa
+   * porque são só quatro linhas: o custo de uma medida longa é o olho perder o
+   * início da linha seguinte, e isso só pesa em blocos altos.
+   */
+  max-width: 76ch;
   /* Um degrau acima do corpo padrão: é o único bloco de texto corrido da
    * seção e sustenta bem o corpo maior. */
   font-size: var(--text-body-lg);
   line-height: var(--leading-body);
-  text-align: left;
+  text-align: center;
+}
+
+/* No mobile a caixa já ocupa a largura toda; centrar o texto ali só criaria
+ * bordas irregulares nas duas pontas. */
+@media (max-width: 767px) {
+  .text {
+    text-align: left;
+  }
 }
 
 /* ---- Tempo 4: banda de números e barbeiros ---- */
